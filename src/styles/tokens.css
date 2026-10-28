@@ -1,0 +1,176 @@
+/*
+ * Glassbox design tokens: "lab notebook".
+ * Warm paper / ink neutrals, hairline rules, one amber accent reserved for
+ * assumptions and "changed" state, a verdict palette (pass / warn / block)
+ * that never doubles as a series color, and a validated categorical palette
+ * for charts (dataviz validator: all hard gates pass in both modes; light
+ * slots 2 and 4 are under 3:1 so charts always ship a table view).
+ *
+ * Light is the default. Dark is selected, not inverted: its own steps,
+ * checked for WCAG contrast against the dark surfaces.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces */
+  --paper: #f5f3ee;          /* page */
+  --surface: #fbfaf6;        /* cards, chart surface */
+  --surface-sunk: #eeebe4;   /* code, inputs, wells */
+  --surface-raised: #ffffff; /* popovers, side panel */
+  --scrim: rgb(26 25 21 / 0.28);
+
+  /* ink (contrast on paper: 15.9 / 6.8 / 5.0) */
+  --ink: #1a1915;
+  --ink-2: #57544c;
+  --ink-3: #6a665d;
+  --ink-inverse: #fbfaf6;
+
+  /* rules */
+  --rule: #e2ded5;
+  --rule-strong: #cdc8bc;
+
+  /* accent: assumptions + changed state only */
+  --accent: #e9a23b;
+  --accent-ink: #8f5600;
+  --accent-wash: #f8e6c0;
+  --accent-wash-2: #fbf1dc;
+
+  /* focus */
+  --focus: #2457c5;
+
+  /* verdicts (text on paper ≥ 5.4:1; always paired with an icon + label) */
+  --pass: #2e6b30;
+  --pass-wash: #e2eedd;
+  --warn: #a2481a;
+  --warn-wash: #f6e2d3;
+  --block: #b42318;
+  --block-wash: #f8dcd8;
+
+  /* charts */
+  --series-1: #2a78d6;
+  --series-2: #1baf7a;
+  --series-3: #6250d6;
+  --series-4: #e87ba4;
+  --chart-grid: #e6e2d9;
+  --chart-axis: #cdc8bc;
+  --chart-wash: color-mix(in oklab, var(--series-1) 10%, transparent);
+
+  /* SQL syntax */
+  --syn-keyword: #6c3fb4;
+  --syn-function: #1f5fb4;
+  --syn-string: #2e6b30;
+  --syn-number: #a2481a;
+  --syn-param: #8f5600;
+  --syn-comment: #6a665d;
+
+  /* elevation */
+  --shadow-1: 0 1px 0 rgb(26 25 21 / 0.03), 0 1px 2px rgb(26 25 21 / 0.06);
+  --shadow-2: 0 2px 4px rgb(26 25 21 / 0.04), 0 8px 24px -8px rgb(26 25 21 / 0.14);
+  --shadow-panel: -1px 0 0 var(--rule), -24px 0 48px -24px rgb(26 25 21 / 0.22);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #121210;
+    --surface: #1c1b18;
+    --surface-sunk: #171613;
+    --surface-raised: #23221e;
+    --scrim: rgb(0 0 0 / 0.5);
+    --ink: #eeebe3;
+    --ink-2: #b9b4a8;
+    --ink-3: #9a958a;
+    --ink-inverse: #1a1915;
+    --rule: #2d2b26;
+    --rule-strong: #3d3a33;
+    --accent: #f2b544;
+    --accent-ink: #f2b544;
+    --accent-wash: #3a2d14;
+    --accent-wash-2: #2a2216;
+    --focus: #7aa7ff;
+    --pass: #74c476;
+    --pass-wash: #1d2d1d;
+    --warn: #f29257;
+    --warn-wash: #352215;
+    --block: #f47a72;
+    --block-wash: #3a1a17;
+    --series-1: #3987e5;
+    --series-2: #199e70;
+    --series-3: #9085e9;
+    --series-4: #d55181;
+    --chart-grid: #2a2823;
+    --chart-axis: #3d3a33;
+    --syn-keyword: #c3a6ff;
+    --syn-function: #8cb8ff;
+    --syn-string: #8fd18f;
+    --syn-number: #f29257;
+    --syn-param: #f2b544;
+    --syn-comment: #8e897e;
+    --shadow-1: 0 1px 0 rgb(0 0 0 / 0.3);
+    --shadow-2: 0 8px 24px -8px rgb(0 0 0 / 0.6);
+    --shadow-panel: -1px 0 0 var(--rule), -24px 0 48px -24px rgb(0 0 0 / 0.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #121210;
+  --surface: #1c1b18;
+  --surface-sunk: #171613;
+  --surface-raised: #23221e;
+  --scrim: rgb(0 0 0 / 0.5);
+  --ink: #eeebe3;
+  --ink-2: #b9b4a8;
+  --ink-3: #9a958a;
+  --ink-inverse: #1a1915;
+  --rule: #2d2b26;
+  --rule-strong: #3d3a33;
+  --accent: #f2b544;
+  --accent-ink: #f2b544;
+  --accent-wash: #3a2d14;
+  --accent-wash-2: #2a2216;
+  --focus: #7aa7ff;
+  --pass: #74c476;
+  --pass-wash: #1d2d1d;
+  --warn: #f29257;
+  --warn-wash: #352215;
+  --block: #f47a72;
+  --block-wash: #3a1a17;
+  --series-1: #3987e5;
+  --series-2: #199e70;
+  --series-3: #9085e9;
+  --series-4: #d55181;
+  --chart-grid: #2a2823;
+  --chart-axis: #3d3a33;
+  --syn-keyword: #c3a6ff;
+  --syn-function: #8cb8ff;
+  --syn-string: #8fd18f;
+  --syn-number: #f29257;
+  --syn-param: #f2b544;
+  --syn-comment: #8e897e;
+  --shadow-1: 0 1px 0 rgb(0 0 0 / 0.3);
+  --shadow-2: 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --shadow-panel: -1px 0 0 var(--rule), -24px 0 48px -24px rgb(0 0 0 / 0.7);
+}
+
+:root {
+  /* motion (mirrored in src/lib/motion.ts for Framer Motion) */
+  --dur-instant: 80ms;
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 360ms;
+  --dur-chart: 650ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1.15);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --dur-chart: 0ms;
+  }
+}

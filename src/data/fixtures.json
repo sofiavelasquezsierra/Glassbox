@@ -1,0 +1,1427 @@
+{
+ "source": "Recorded from real agent runs on 2026-10-28 (Where are support tickets spiking? / Who are our most engaged organizations?)",
+ "tickets": {
+  "plan": {
+   "status": "Planned support ticket spike dashboard",
+   "headline": "Compare ticket volume to the prior period overall, over time, and by category to see where spikes are concentrated.",
+   "metrics": [
+    {
+     "id": "total_tickets",
+     "title": "Tickets created",
+     "description": "Count of support tickets created in the selected period, shown against the previous period of equal length.",
+     "chart": "kpi",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts"
+     ]
+    },
+    {
+     "id": "weekly_ticket_trend",
+     "title": "Weekly ticket volume",
+     "description": "Number of support tickets created per week in the selected period, so sudden jumps are visible.",
+     "chart": "line",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts"
+     ]
+    },
+    {
+     "id": "ticket_change_by_category",
+     "title": "Ticket change by category",
+     "description": "For each ticket category, tickets in the selected period versus the previous period, with percent change. Categories below the minimum ticket threshold in the current period are excluded to avoid noisy percentages.",
+     "chart": "table",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "min_tickets_for_spike"
+     ]
+    },
+    {
+     "id": "ticket_change_by_industry",
+     "title": "Ticket change by industry",
+     "description": "For each customer industry, tickets in the selected period versus the previous period, with percent change. Industries below the minimum ticket threshold in the current period are excluded.",
+     "chart": "bar",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "min_tickets_for_spike"
+     ]
+    }
+   ],
+   "assumptions": [
+    {
+     "key": "date_range",
+     "label": "Date range",
+     "rationale": "A recent 90-day window gives enough weekly points to see a spike, and is compared against the 90 days before it.",
+     "type": "date_range",
+     "value": {
+      "preset": "last_90_days"
+     }
+    },
+    {
+     "key": "timezone",
+     "label": "Timezone",
+     "rationale": "Tickets are bucketed into days and weeks in this timezone; UTC is a neutral default when no company timezone is known.",
+     "type": "timezone",
+     "value": "UTC"
+    },
+    {
+     "key": "exclude_test_accounts",
+     "label": "Exclude test orgs",
+     "rationale": "Test organizations (is_test) would inflate ticket counts and create false spikes, so they are excluded by default.",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "key": "min_tickets_for_spike",
+     "label": "Min tickets",
+     "rationale": "Small categories can show huge percent changes from a handful of tickets, so require a minimum count in the current period to be ranked.",
+     "type": "int",
+     "value": 10,
+     "min": 1,
+     "max": 100,
+     "unit": "tickets"
+    }
+   ]
+  },
+  "metrics": {
+   "total_tickets": {
+    "metric": {
+     "id": "total_tickets",
+     "title": "Tickets created",
+     "description": "Count of support tickets created in the selected period, shown against the previous period of equal length.",
+     "chart": "kpi",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts"
+     ]
+    },
+    "sql": "WITH tickets AS (\n  SELECT t.created_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n)\nSELECT\n  count(*) FILTER (WHERE created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n                   AND created_at < (:date_range_end::date)::timestamp at time zone :timezone::text) AS value,\n  count(*) FILTER (WHERE created_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text\n                   AND created_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text) AS previous_value\nFROM tickets",
+    "explanation": "Counts tickets (excluding test orgs if enabled) created in the current date range and in the equal-length previous range, using timezone-adjusted boundaries.",
+    "uses": [
+     "exclude_test_accounts",
+     "date_range_start",
+     "timezone",
+     "date_range_end",
+     "date_range_prev_start",
+     "date_range_prev_end"
+    ],
+    "review": {
+     "metric_id": "total_tickets",
+     "verdict": "pass",
+     "summary": "This query correctly counts support tickets from non-test organizations in the selected 90-day window and in the equal-length prior window, using timezone-aware boundaries.",
+     "issues": [],
+     "rewritten_sql": null
+    },
+    "finalSql": "WITH tickets AS (\n  SELECT t.created_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n)\nSELECT\n  count(*) FILTER (WHERE created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n                   AND created_at < (:date_range_end::date)::timestamp at time zone :timezone::text) AS value,\n  count(*) FILTER (WHERE created_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text\n                   AND created_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text) AS previous_value\nFROM tickets",
+    "result": {
+     "columns": [
+      {
+       "name": "value",
+       "type": "number"
+      },
+      {
+       "name": "previous_value",
+       "type": "number"
+      }
+     ],
+     "rows": [
+      [
+       625,
+       599
+      ]
+     ],
+     "row_count": 1,
+     "truncated": false,
+     "runtime_ms": 360,
+     "executed_at": "2026-10-28T18:12:26.556Z",
+     "plan_cost": 94,
+     "params": {
+      "exclude_test_accounts": true,
+      "date_range_start": "2026-07-31",
+      "timezone": "UTC",
+      "date_range_end": "2026-10-29",
+      "date_range_prev_start": "2026-05-02",
+      "date_range_prev_end": "2026-07-31"
+     }
+    }
+   },
+   "weekly_ticket_trend": {
+    "metric": {
+     "id": "weekly_ticket_trend",
+     "title": "Weekly ticket volume",
+     "description": "Number of support tickets created per week in the selected period, so sudden jumps are visible.",
+     "chart": "line",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts"
+     ]
+    },
+    "sql": "WITH tickets AS (SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text)::date AS week_start FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE t.created_at >= (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text AND t.created_at < (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)) SELECT week_start AS x, count(*)::int AS y FROM tickets GROUP BY week_start ORDER BY week_start",
+    "explanation": "Counts tickets created in the selected date range (in the chosen timezone, excluding test orgs when enabled), grouped by week starting Monday.",
+    "uses": [
+     "timezone",
+     "date_range_start",
+     "date_range_end",
+     "exclude_test_accounts"
+    ],
+    "review": {
+     "metric_id": "weekly_ticket_trend",
+     "verdict": "warn",
+     "summary": "The weekly ticket counts are correct, but the first and last weeks are only partly covered, so they look like dips that could hide or fake a spike; the rewrite shows only complete weeks and includes weeks with zero tickets.",
+     "issues": [
+      {
+       "code": "date_range",
+       "severity": "warn",
+       "message": "date_trunc('week', t.created_at) creates partial buckets: week of 2026-07-27 holds 3 days (from 07-31) and week of 2026-10-26 holds 2 days. Restrict x to complete weeks inside :date_range_start/:date_range_end, or label them as partial."
+      },
+      {
+       "code": "other",
+       "severity": "warn",
+       "message": "Weeks with zero tickets produce no row, so the line skips them. Drive x from generate_series over the week starts and LEFT JOIN the counts with COALESCE(..., 0)."
+      }
+     ],
+     "rewritten_sql": "WITH bounds AS (SELECT date_trunc('week', (:date_range_start::date + 6))::date AS first_week, (date_trunc('week', :date_range_end::date)::date - 7) AS last_week), weeks AS (SELECT gs::date AS week_start FROM bounds b, generate_series(b.first_week, b.last_week, interval '1 week') AS gs), tickets AS (SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text)::date AS week_start FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id CROSS JOIN bounds b WHERE t.created_at >= (b.first_week)::timestamp AT TIME ZONE :timezone::text AND t.created_at < (b.last_week + 7)::timestamp AT TIME ZONE :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)), counts AS (SELECT week_start, count(*) AS n FROM tickets GROUP BY week_start) SELECT w.week_start AS x, COALESCE(c.n, 0)::int AS y FROM weeks w LEFT JOIN counts c ON c.week_start = w.week_start ORDER BY w.week_start"
+    },
+    "finalSql": "WITH bounds AS (SELECT date_trunc('week', (:date_range_start::date + 6))::date AS first_week, (date_trunc('week', :date_range_end::date)::date - 7) AS last_week), weeks AS (SELECT gs::date AS week_start FROM bounds b, generate_series(b.first_week, b.last_week, interval '1 week') AS gs), tickets AS (SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text)::date AS week_start FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id CROSS JOIN bounds b WHERE t.created_at >= (b.first_week)::timestamp AT TIME ZONE :timezone::text AND t.created_at < (b.last_week + 7)::timestamp AT TIME ZONE :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)), counts AS (SELECT week_start, count(*) AS n FROM tickets GROUP BY week_start) SELECT w.week_start AS x, COALESCE(c.n, 0)::int AS y FROM weeks w LEFT JOIN counts c ON c.week_start = w.week_start ORDER BY w.week_start",
+    "result": {
+     "columns": [
+      {
+       "name": "x",
+       "type": "date"
+      },
+      {
+       "name": "y",
+       "type": "number"
+      }
+     ],
+     "rows": [
+      [
+       "2026-08-03",
+       42
+      ],
+      [
+       "2026-08-10",
+       99
+      ],
+      [
+       "2026-08-17",
+       54
+      ],
+      [
+       "2026-08-24",
+       35
+      ],
+      [
+       "2026-08-31",
+       52
+      ],
+      [
+       "2026-09-07",
+       43
+      ],
+      [
+       "2026-09-14",
+       48
+      ],
+      [
+       "2026-09-21",
+       46
+      ],
+      [
+       "2026-09-28",
+       41
+      ],
+      [
+       "2026-10-05",
+       37
+      ],
+      [
+       "2026-10-12",
+       42
+      ],
+      [
+       "2026-10-19",
+       55
+      ]
+     ],
+     "row_count": 12,
+     "truncated": false,
+     "runtime_ms": 114,
+     "executed_at": "2026-10-28T18:12:37.267Z",
+     "plan_cost": 131,
+     "params": {
+      "date_range_start": "2026-07-31",
+      "date_range_end": "2026-10-29",
+      "timezone": "UTC",
+      "exclude_test_accounts": true
+     }
+    }
+   },
+   "ticket_change_by_category": {
+    "metric": {
+     "id": "ticket_change_by_category",
+     "title": "Ticket change by category",
+     "description": "For each ticket category, tickets in the selected period versus the previous period, with percent change. Categories below the minimum ticket threshold in the current period are excluded to avoid noisy percentages.",
+     "chart": "table",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "min_tickets_for_spike"
+     ]
+    },
+    "sql": "WITH tickets AS (SELECT t.category, CASE WHEN t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text THEN 'cur' WHEN t.created_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text THEN 'prev' END AS period FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)), agg AS (SELECT category, count(*) FILTER (WHERE period = 'cur') AS current_tickets, count(*) FILTER (WHERE period = 'prev') AS previous_tickets FROM tickets WHERE period IS NOT NULL GROUP BY category) SELECT category, current_tickets, previous_tickets, current_tickets - previous_tickets AS change, CASE WHEN previous_tickets = 0 THEN NULL ELSE round((current_tickets - previous_tickets) * 100.0 / previous_tickets, 1) END AS pct_change FROM agg WHERE current_tickets >= :min_tickets_for_spike::int ORDER BY pct_change DESC NULLS LAST, current_tickets DESC LIMIT 50",
+    "explanation": "Counts tickets per category in the current and prior equal-length periods (in the chosen timezone, excluding test orgs if set), computes absolute and percent change, and keeps categories meeting the minimum current-period count.",
+    "uses": [
+     "date_range_start",
+     "timezone",
+     "date_range_end",
+     "date_range_prev_start",
+     "date_range_prev_end",
+     "exclude_test_accounts",
+     "min_tickets_for_spike"
+    ],
+    "review": {
+     "metric_id": "ticket_change_by_category",
+     "verdict": "pass",
+     "summary": "The query correctly compares ticket counts by category between the current and previous 90-day periods, excluding test orgs, with correct timezone handling and threshold filtering.",
+     "issues": [],
+     "rewritten_sql": null
+    },
+    "finalSql": "WITH tickets AS (SELECT t.category, CASE WHEN t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text THEN 'cur' WHEN t.created_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text THEN 'prev' END AS period FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)), agg AS (SELECT category, count(*) FILTER (WHERE period = 'cur') AS current_tickets, count(*) FILTER (WHERE period = 'prev') AS previous_tickets FROM tickets WHERE period IS NOT NULL GROUP BY category) SELECT category, current_tickets, previous_tickets, current_tickets - previous_tickets AS change, CASE WHEN previous_tickets = 0 THEN NULL ELSE round((current_tickets - previous_tickets) * 100.0 / previous_tickets, 1) END AS pct_change FROM agg WHERE current_tickets >= :min_tickets_for_spike::int ORDER BY pct_change DESC NULLS LAST, current_tickets DESC LIMIT 50",
+    "result": {
+     "columns": [
+      {
+       "name": "category",
+       "type": "text"
+      },
+      {
+       "name": "current_tickets",
+       "type": "number"
+      },
+      {
+       "name": "previous_tickets",
+       "type": "number"
+      },
+      {
+       "name": "change",
+       "type": "number"
+      },
+      {
+       "name": "pct_change",
+       "type": "number"
+      }
+     ],
+     "rows": [
+      [
+       "performance",
+       96,
+       63,
+       33,
+       52.4
+      ],
+      [
+       "integrations",
+       131,
+       93,
+       38,
+       40.9
+      ],
+      [
+       "account",
+       90,
+       71,
+       19,
+       26.8
+      ],
+      [
+       "feature_request",
+       73,
+       68,
+       5,
+       7.4
+      ],
+      [
+       "bug",
+       125,
+       136,
+       -11,
+       -8.1
+      ],
+      [
+       "billing",
+       110,
+       168,
+       -58,
+       -34.5
+      ]
+     ],
+     "row_count": 6,
+     "truncated": false,
+     "runtime_ms": 120,
+     "executed_at": "2026-10-28T18:12:33.551Z",
+     "plan_cost": 151,
+     "params": {
+      "date_range_start": "2026-07-31",
+      "timezone": "UTC",
+      "date_range_end": "2026-10-29",
+      "date_range_prev_start": "2026-05-02",
+      "date_range_prev_end": "2026-07-31",
+      "exclude_test_accounts": true,
+      "min_tickets_for_spike": 10
+     }
+    }
+   },
+   "ticket_change_by_industry": {
+    "metric": {
+     "id": "ticket_change_by_industry",
+     "title": "Ticket change by industry",
+     "description": "For each customer industry, tickets in the selected period versus the previous period, with percent change. Industries below the minimum ticket threshold in the current period are excluded.",
+     "chart": "bar",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "min_tickets_for_spike"
+     ]
+    },
+    "sql": "WITH tix AS (\n  SELECT o.industry,\n    CASE\n      WHEN t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n       AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text THEN 'cur'\n      WHEN t.created_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text\n       AND t.created_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text THEN 'prev'\n    END AS period\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n),\nagg AS (\n  SELECT industry,\n    count(*) FILTER (WHERE period = 'cur') AS current_tickets,\n    count(*) FILTER (WHERE period = 'prev') AS previous_tickets\n  FROM tix\n  WHERE period IS NOT NULL\n  GROUP BY industry\n)\nSELECT industry AS label,\n  current_tickets AS value,\n  previous_tickets,\n  round(100.0 * (current_tickets - previous_tickets) / NULLIF(previous_tickets, 0), 1) AS pct_change\nFROM agg\nWHERE current_tickets >= :min_tickets_for_spike::int\nORDER BY value DESC\nLIMIT 20",
+    "explanation": "Counts tickets per org industry in the current vs previous equal-length period (in the chosen timezone, optionally excluding test orgs), keeps industries meeting the minimum current count, and shows percent change.",
+    "uses": [
+     "date_range_start",
+     "timezone",
+     "date_range_end",
+     "date_range_prev_start",
+     "date_range_prev_end",
+     "exclude_test_accounts",
+     "min_tickets_for_spike"
+    ],
+    "review": {
+     "metric_id": "ticket_change_by_industry",
+     "verdict": "warn",
+     "summary": "The filters, timezone handling and date windows are correct, but the bar plots and sorts industries by raw current ticket count, so it shows the biggest industries rather than where tickets are spiking.",
+     "issues": [
+      {
+       "code": "question_mismatch",
+       "severity": "warn",
+       "message": "value = current_tickets ranks industries by volume, not change. Set value to current_tickets - previous_tickets (keep the count unit) and expose current_tickets, previous_tickets and pct_change as extra columns."
+      },
+      {
+       "code": "null_handling",
+       "severity": "warn",
+       "message": "pct_change is NULL when previous_tickets = 0 (NULLIF), so brand-new spikes have no percentage. Make sure the chart labels these as 'new' rather than hiding them."
+      }
+     ],
+     "rewritten_sql": "WITH tix AS (\n  SELECT o.industry,\n    CASE\n      WHEN t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n       AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text THEN 'cur'\n      WHEN t.created_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text\n       AND t.created_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text THEN 'prev'\n    END AS period\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n),\nagg AS (\n  SELECT industry,\n    count(*) FILTER (WHERE period = 'cur') AS current_tickets,\n    count(*) FILTER (WHERE period = 'prev') AS previous_tickets\n  FROM tix\n  WHERE period IS NOT NULL\n  GROUP BY industry\n)\nSELECT industry AS label,\n  current_tickets - previous_tickets AS value,\n  current_tickets,\n  previous_tickets,\n  round(100.0 * (current_tickets - previous_tickets) / NULLIF(previous_tickets, 0), 1) AS pct_change\nFROM agg\nWHERE current_tickets >= :min_tickets_for_spike::int\nORDER BY value DESC, current_tickets DESC\nLIMIT 20"
+    },
+    "finalSql": "WITH tix AS (\n  SELECT o.industry,\n    CASE\n      WHEN t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n       AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text THEN 'cur'\n      WHEN t.created_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text\n       AND t.created_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text THEN 'prev'\n    END AS period\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n),\nagg AS (\n  SELECT industry,\n    count(*) FILTER (WHERE period = 'cur') AS current_tickets,\n    count(*) FILTER (WHERE period = 'prev') AS previous_tickets\n  FROM tix\n  WHERE period IS NOT NULL\n  GROUP BY industry\n)\nSELECT industry AS label,\n  current_tickets - previous_tickets AS value,\n  current_tickets,\n  previous_tickets,\n  round(100.0 * (current_tickets - previous_tickets) / NULLIF(previous_tickets, 0), 1) AS pct_change\nFROM agg\nWHERE current_tickets >= :min_tickets_for_spike::int\nORDER BY value DESC, current_tickets DESC\nLIMIT 20",
+    "result": {
+     "columns": [
+      {
+       "name": "label",
+       "type": "text"
+      },
+      {
+       "name": "value",
+       "type": "number"
+      },
+      {
+       "name": "current_tickets",
+       "type": "number"
+      },
+      {
+       "name": "previous_tickets",
+       "type": "number"
+      },
+      {
+       "name": "pct_change",
+       "type": "number"
+      }
+     ],
+     "rows": [
+      [
+       "E-commerce",
+       14,
+       67,
+       53,
+       26.4
+      ],
+      [
+       "Energy",
+       14,
+       60,
+       46,
+       30.4
+      ],
+      [
+       "Developer tools",
+       10,
+       69,
+       59,
+       16.9
+      ],
+      [
+       "Media",
+       8,
+       64,
+       56,
+       14.3
+      ],
+      [
+       "Logistics",
+       5,
+       67,
+       62,
+       8.1
+      ],
+      [
+       "Fintech",
+       2,
+       45,
+       43,
+       4.7
+      ],
+      [
+       "Manufacturing",
+       -1,
+       67,
+       68,
+       -1.5
+      ],
+      [
+       "Education",
+       -7,
+       80,
+       87,
+       -8
+      ],
+      [
+       "Nonprofit",
+       -7,
+       43,
+       50,
+       -14
+      ],
+      [
+       "Healthcare",
+       -12,
+       63,
+       75,
+       -16
+      ]
+     ],
+     "row_count": 10,
+     "truncated": false,
+     "runtime_ms": 113,
+     "executed_at": "2026-10-28T18:12:34.931Z",
+     "plan_cost": 151,
+     "params": {
+      "date_range_start": "2026-07-31",
+      "timezone": "UTC",
+      "date_range_end": "2026-10-29",
+      "date_range_prev_start": "2026-05-02",
+      "date_range_prev_end": "2026-07-31",
+      "exclude_test_accounts": true,
+      "min_tickets_for_spike": 10
+     }
+    }
+   }
+  },
+  "steps": [
+   {
+    "type": "step",
+    "step": "intent",
+    "status": "running",
+    "label": "Reading the schema",
+    "model": "claude-haiku-5-5"
+   },
+   {
+    "type": "step",
+    "step": "intent",
+    "status": "done",
+    "label": "Found support tickets and organizations",
+    "model": "claude-haiku-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Choosing “Tickets created”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Choosing “Weekly ticket volume”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Choosing “Ticket change by category”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Choosing “Ticket change by industry”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining “Date range”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining “Timezone”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining “Exclude test orgs”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining “Min tickets”",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "plan",
+    "status": "done",
+    "label": "Planned support ticket spike dashboard",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "detail": "1 of 4 written",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "detail": "2 of 4 written",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "detail": "3 of 4 written",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "sql",
+    "status": "done",
+    "label": "Wrote 4 queries",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "I'm verifying the query joins the org table correctly on the non-null foreign key, and checking the exclusi…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "The weekly trend join and timezone logic look correct, but I'm noticing the first and last weeks are partia…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "I should also check whether weeks with zero tickets are silently omitted, creating gaps in the series.",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "I'm verifying the query joins the org table correctly on the non-null foreign key, and checking the exclusi…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "Looking at the date ranges, both current and previous periods span 90 days, though I'm noting the current p…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "1 of 4 reviewed",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "execute",
+    "status": "running",
+    "label": "Running queries read-only"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "2 of 4 reviewed",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "3 of 4 reviewed, 1 flagged",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "review",
+    "status": "warn",
+    "label": "Reviewed 4 queries: 2 flagged",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "type": "step",
+    "step": "execute",
+    "status": "done",
+    "label": "Ran 4 queries in 360 ms"
+   }
+  ]
+ },
+ "engaged": {
+  "plan": {
+   "status": "Planned engagement ranking",
+   "headline": "Rank organizations by distinct active users and activity volume in the selected period",
+   "metrics": [
+    {
+     "id": "top_orgs_engagement",
+     "title": "Most engaged organizations",
+     "description": "Top organizations ranked by feature_used events in the period, showing distinct active users, logins and feature events per organization.",
+     "chart": "table",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "exclude_internal_users",
+      "engagement_event_types",
+      "top_n_orgs"
+     ]
+    },
+    {
+     "id": "engaged_org_share",
+     "title": "Share of orgs highly engaged",
+     "description": "Percent of non-test organizations with at least the minimum number of active days in the period, where an active day is a day with any counted event from a user.",
+     "chart": "kpi",
+     "unit": "percent",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "exclude_internal_users",
+      "engagement_event_types",
+      "min_active_days"
+     ]
+    },
+    {
+     "id": "engaged_orgs_trend",
+     "title": "Active organizations by week",
+     "description": "Weekly count of distinct organizations with at least one counted event, shown to see whether engagement is growing.",
+     "chart": "line",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "exclude_internal_users",
+      "engagement_event_types"
+     ]
+    }
+   ],
+   "assumptions": [
+    {
+     "key": "date_range",
+     "label": "Date range",
+     "rationale": "Engagement is measured over a recent window; 90 days smooths out weekly noise.",
+     "type": "date_range",
+     "value": {
+      "preset": "last_90_days"
+     }
+    },
+    {
+     "key": "timezone",
+     "label": "Timezone",
+     "rationale": "Days and weeks are bucketed in one timezone so counts are consistent across customers.",
+     "type": "timezone",
+     "value": "UTC"
+    },
+    {
+     "key": "exclude_test_accounts",
+     "label": "Exclude test orgs",
+     "rationale": "The data dictionary says QA, demo and load-test tenants should be excluded from business metrics.",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "key": "exclude_internal_users",
+     "label": "Exclude internal users",
+     "rationale": "Staff activity would inflate engagement and does not reflect customer usage.",
+     "type": "bool",
+     "value": true
+    },
+    {
+     "key": "engagement_event_types",
+     "label": "Counted events",
+     "rationale": "Logins are once per session; feature usage shows deeper engagement. Both count by default, but you can limit it to feature use only.",
+     "type": "enum",
+     "value": "all_events",
+     "options": [
+      "all_events",
+      "feature_used_only",
+      "login_only"
+     ]
+    },
+    {
+     "key": "top_n_orgs",
+     "label": "Orgs shown",
+     "rationale": "A short leaderboard is easy to scan and act on.",
+     "type": "int",
+     "value": 20,
+     "min": 5,
+     "max": 100,
+     "unit": "orgs"
+    },
+    {
+     "key": "min_active_days",
+     "label": "Min active days",
+     "rationale": "An org counts as highly engaged if it has activity on at least this many distinct days in the period.",
+     "type": "int",
+     "value": 20,
+     "min": 1,
+     "max": 90,
+     "unit": "days"
+    }
+   ]
+  },
+  "metrics": {
+   "top_orgs_engagement": {
+    "metric": {
+     "id": "top_orgs_engagement",
+     "title": "Most engaged organizations",
+     "description": "Top organizations ranked by feature_used events in the period, showing distinct active users, logins and feature events per organization.",
+     "chart": "table",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "exclude_internal_users",
+      "engagement_event_types",
+      "top_n_orgs"
+     ]
+    },
+    "sql": "WITH counted_events AS (\n  SELECT e.org_id, e.user_id, e.type\n  FROM northwind.events e\n  JOIN northwind.users u ON u.id = e.user_id\n  JOIN northwind.organizations o ON o.id = e.org_id\n  WHERE e.occurred_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND e.occurred_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n    AND (NOT :exclude_internal_users::boolean OR NOT u.is_internal)\n    AND (\n      :engagement_event_types::text = 'all_events'\n      OR (:engagement_event_types::text = 'feature_used_only' AND e.type = 'feature_used')\n      OR (:engagement_event_types::text = 'login_only' AND e.type = 'login')\n    )\n),\norg_activity AS (\n  SELECT org_id,\n    count(DISTINCT user_id) AS active_users,\n    count(*) FILTER (WHERE type = 'login') AS logins,\n    count(*) FILTER (WHERE type = 'feature_used') AS feature_events,\n    count(*) AS total_events\n  FROM counted_events\n  GROUP BY org_id\n)\nSELECT o.name AS organization,\n  a.active_users,\n  a.logins,\n  a.feature_events,\n  a.total_events\nFROM org_activity a\nJOIN northwind.organizations o ON o.id = a.org_id\nORDER BY a.feature_events DESC, a.total_events DESC, a.active_users DESC, o.name\nLIMIT LEAST(:top_n_orgs::int, 50)",
+    "explanation": "Counts filtered events per org (excluding test orgs/internal users as set), ranks by feature events then total events, and shows active users, logins and feature events.",
+    "uses": [
+     "date_range_start",
+     "timezone",
+     "date_range_end",
+     "exclude_test_accounts",
+     "exclude_internal_users",
+     "engagement_event_types",
+     "top_n_orgs"
+    ]
+   },
+   "engaged_org_share": {
+    "metric": {
+     "id": "engaged_org_share",
+     "title": "Share of orgs highly engaged",
+     "description": "Percent of non-test organizations with at least the minimum number of active days in the period, where an active day is a day with any counted event from a user.",
+     "chart": "kpi",
+     "unit": "percent",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "exclude_internal_users",
+      "engagement_event_types",
+      "min_active_days"
+     ]
+    },
+    "sql": "WITH periods AS (\n  SELECT 'cur' AS label,\n    (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text AS start_ts,\n    (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text AS end_ts\n  UNION ALL\n  SELECT 'prev',\n    (:date_range_prev_start::date)::timestamp AT TIME ZONE :timezone::text,\n    (:date_range_prev_end::date)::timestamp AT TIME ZONE :timezone::text\n),\norgs_in_scope AS (\n  -- orgs that existed by the end of each period\n  SELECT p.label, o.id AS org_id\n  FROM northwind.organizations o\n  JOIN periods p ON o.created_at < p.end_ts\n  WHERE (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n),\nactive_days AS (\n  SELECT p.label, e.org_id,\n    COUNT(DISTINCT (e.occurred_at AT TIME ZONE :timezone::text)::date) AS active_days\n  FROM northwind.events e\n  JOIN northwind.users u ON u.id = e.user_id\n  JOIN periods p ON e.occurred_at >= p.start_ts AND e.occurred_at < p.end_ts\n  WHERE (NOT :exclude_internal_users::boolean OR NOT u.is_internal)\n    AND (:engagement_event_types::text = 'all_events'\n      OR (:engagement_event_types::text = 'feature_used_only' AND e.type = 'feature_used')\n      OR (:engagement_event_types::text = 'login_only' AND e.type = 'login'))\n  GROUP BY p.label, e.org_id\n),\nper_period AS (\n  SELECT s.label,\n    COUNT(*) AS total_orgs,\n    COUNT(*) FILTER (WHERE COALESCE(a.active_days, 0) >= :min_active_days::int) AS engaged_orgs\n  FROM orgs_in_scope s\n  LEFT JOIN active_days a ON a.label = s.label AND a.org_id = s.org_id\n  GROUP BY s.label\n)\nSELECT\n  ROUND(100.0 * MAX(engaged_orgs) FILTER (WHERE label = 'cur') / NULLIF(MAX(total_orgs) FILTER (WHERE label = 'cur'), 0), 1) AS value,\n  ROUND(100.0 * MAX(engaged_orgs) FILTER (WHERE label = 'prev') / NULLIF(MAX(total_orgs) FILTER (WHERE label = 'prev'), 0), 1) AS previous_value\nFROM per_period",
+    "explanation": "Percent of in-scope orgs with counted events on at least min_active_days distinct local days in the period, versus the previous equal-length period.",
+    "uses": [
+     "date_range_start",
+     "timezone",
+     "date_range_end",
+     "date_range_prev_start",
+     "date_range_prev_end",
+     "exclude_test_accounts",
+     "exclude_internal_users",
+     "engagement_event_types",
+     "min_active_days"
+    ],
+    "review": {
+     "metric_id": "engaged_org_share",
+     "verdict": "pass",
+     "summary": "The query correctly computes the percent of non-test organizations with at least the minimum number of active days in the current and previous 90-day periods.",
+     "issues": [],
+     "rewritten_sql": null
+    },
+    "finalSql": "WITH periods AS (\n  SELECT 'cur' AS label,\n    (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text AS start_ts,\n    (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text AS end_ts\n  UNION ALL\n  SELECT 'prev',\n    (:date_range_prev_start::date)::timestamp AT TIME ZONE :timezone::text,\n    (:date_range_prev_end::date)::timestamp AT TIME ZONE :timezone::text\n),\norgs_in_scope AS (\n  -- orgs that existed by the end of each period\n  SELECT p.label, o.id AS org_id\n  FROM northwind.organizations o\n  JOIN periods p ON o.created_at < p.end_ts\n  WHERE (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n),\nactive_days AS (\n  SELECT p.label, e.org_id,\n    COUNT(DISTINCT (e.occurred_at AT TIME ZONE :timezone::text)::date) AS active_days\n  FROM northwind.events e\n  JOIN northwind.users u ON u.id = e.user_id\n  JOIN periods p ON e.occurred_at >= p.start_ts AND e.occurred_at < p.end_ts\n  WHERE (NOT :exclude_internal_users::boolean OR NOT u.is_internal)\n    AND (:engagement_event_types::text = 'all_events'\n      OR (:engagement_event_types::text = 'feature_used_only' AND e.type = 'feature_used')\n      OR (:engagement_event_types::text = 'login_only' AND e.type = 'login'))\n  GROUP BY p.label, e.org_id\n),\nper_period AS (\n  SELECT s.label,\n    COUNT(*) AS total_orgs,\n    COUNT(*) FILTER (WHERE COALESCE(a.active_days, 0) >= :min_active_days::int) AS engaged_orgs\n  FROM orgs_in_scope s\n  LEFT JOIN active_days a ON a.label = s.label AND a.org_id = s.org_id\n  GROUP BY s.label\n)\nSELECT\n  ROUND(100.0 * MAX(engaged_orgs) FILTER (WHERE label = 'cur') / NULLIF(MAX(total_orgs) FILTER (WHERE label = 'cur'), 0), 1) AS value,\n  ROUND(100.0 * MAX(engaged_orgs) FILTER (WHERE label = 'prev') / NULLIF(MAX(total_orgs) FILTER (WHERE label = 'prev'), 0), 1) AS previous_value\nFROM per_period",
+    "result": {
+     "columns": [
+      {
+       "name": "value",
+       "type": "number"
+      },
+      {
+       "name": "previous_value",
+       "type": "number"
+      }
+     ],
+     "rows": [
+      [
+       46,
+       48.8
+      ]
+     ],
+     "row_count": 1,
+     "truncated": false,
+     "runtime_ms": 971,
+     "executed_at": "2026-10-28T18:02:57.354Z",
+     "plan_cost": 11401,
+     "params": {
+      "date_range_start": "2026-07-31",
+      "timezone": "UTC",
+      "date_range_end": "2026-10-29",
+      "date_range_prev_start": "2026-05-02",
+      "date_range_prev_end": "2026-07-31",
+      "exclude_test_accounts": true,
+      "exclude_internal_users": true,
+      "engagement_event_types": "all_events",
+      "min_active_days": 20
+     }
+    }
+   },
+   "engaged_orgs_trend": {
+    "metric": {
+     "id": "engaged_orgs_trend",
+     "title": "Active organizations by week",
+     "description": "Weekly count of distinct organizations with at least one counted event, shown to see whether engagement is growing.",
+     "chart": "line",
+     "unit": "count",
+     "assumptions": [
+      "date_range",
+      "timezone",
+      "exclude_test_accounts",
+      "exclude_internal_users",
+      "engagement_event_types"
+     ]
+    },
+    "sql": "WITH counted_events AS (\n  SELECT e.org_id, e.occurred_at\n  FROM northwind.events e\n  JOIN northwind.organizations o ON o.id = e.org_id\n  JOIN northwind.users u ON u.id = e.user_id\n  WHERE e.occurred_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND e.occurred_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)\n    AND (\n      :engagement_event_types::text = 'all_events'\n      OR (:engagement_event_types::text = 'feature_used_only' AND e.type = 'feature_used')\n      OR (:engagement_event_types::text = 'login_only' AND e.type = 'login')\n    )\n)\nSELECT\n  date_trunc('week', occurred_at at time zone :timezone::text)::date AS x,\n  count(DISTINCT org_id) AS y\nFROM counted_events\nGROUP BY 1\nORDER BY 1",
+    "explanation": "Counts distinct organizations with at least one counted event per week in the chosen timezone, applying test, internal and event type filters.",
+    "uses": [
+     "date_range_start",
+     "timezone",
+     "date_range_end",
+     "exclude_test_accounts",
+     "exclude_internal_users",
+     "engagement_event_types"
+    ],
+    "review": {
+     "metric_id": "engaged_orgs_trend",
+     "verdict": "warn",
+     "summary": "The weekly active-org count is right, but partial first and last weeks show artificial dips; the rewrite keeps only complete weeks.",
+     "issues": [
+      {
+       "code": "date_range",
+       "severity": "warn",
+       "message": "Range starts Fri 2026-07-31, so the first date_trunc('week') bucket has only 3 days and undercounts distinct org_id; drop partial weeks."
+      },
+      {
+       "code": "date_range",
+       "severity": "warn",
+       "message": "Last bucket (week of 2026-10-26) has at most 2 days of data, so it shows a fake decline in the trend; keep only weeks fully inside the range."
+      }
+     ],
+     "rewritten_sql": "WITH counted_events AS (\n  SELECT e.org_id, e.occurred_at\n  FROM northwind.events e\n  JOIN northwind.organizations o ON o.id = e.org_id\n  JOIN northwind.users u ON u.id = e.user_id\n  WHERE e.occurred_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND e.occurred_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)\n    AND (\n      :engagement_event_types::text = 'all_events'\n      OR (:engagement_event_types::text = 'feature_used_only' AND e.type = 'feature_used')\n      OR (:engagement_event_types::text = 'login_only' AND e.type = 'login')\n    )\n),\nweekly AS (\n  SELECT\n    date_trunc('week', occurred_at at time zone :timezone::text)::date AS x,\n    count(DISTINCT org_id) AS y\n  FROM counted_events\n  GROUP BY 1\n)\nSELECT x, y\nFROM weekly\nWHERE x >= :date_range_start::date\n  AND x + 7 <= :date_range_end::date\nORDER BY x"
+    },
+    "finalSql": "WITH counted_events AS (\n  SELECT e.org_id, e.occurred_at\n  FROM northwind.events e\n  JOIN northwind.organizations o ON o.id = e.org_id\n  JOIN northwind.users u ON u.id = e.user_id\n  WHERE e.occurred_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND e.occurred_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)\n    AND (\n      :engagement_event_types::text = 'all_events'\n      OR (:engagement_event_types::text = 'feature_used_only' AND e.type = 'feature_used')\n      OR (:engagement_event_types::text = 'login_only' AND e.type = 'login')\n    )\n),\nweekly AS (\n  SELECT\n    date_trunc('week', occurred_at at time zone :timezone::text)::date AS x,\n    count(DISTINCT org_id) AS y\n  FROM counted_events\n  GROUP BY 1\n)\nSELECT x, y\nFROM weekly\nWHERE x >= :date_range_start::date\n  AND x + 7 <= :date_range_end::date\nORDER BY x",
+    "result": {
+     "columns": [
+      {
+       "name": "x",
+       "type": "date"
+      },
+      {
+       "name": "y",
+       "type": "number"
+      }
+     ],
+     "rows": [
+      [
+       "2026-08-03",
+       248
+      ],
+      [
+       "2026-08-10",
+       256
+      ],
+      [
+       "2026-08-17",
+       250
+      ],
+      [
+       "2026-08-24",
+       257
+      ],
+      [
+       "2026-08-31",
+       270
+      ],
+      [
+       "2026-09-07",
+       273
+      ],
+      [
+       "2026-09-14",
+       281
+      ],
+      [
+       "2026-09-21",
+       286
+      ],
+      [
+       "2026-09-28",
+       298
+      ],
+      [
+       "2026-10-05",
+       298
+      ],
+      [
+       "2026-10-12",
+       309
+      ],
+      [
+       "2026-10-19",
+       312
+      ]
+     ],
+     "row_count": 12,
+     "truncated": false,
+     "runtime_ms": 572,
+     "executed_at": "2026-10-28T18:02:57.671Z",
+     "plan_cost": 7505,
+     "params": {
+      "date_range_start": "2026-07-31",
+      "timezone": "UTC",
+      "date_range_end": "2026-10-29",
+      "exclude_test_accounts": true,
+      "exclude_internal_users": true,
+      "engagement_event_types": "all_events"
+     }
+    }
+   }
+  },
+  "steps": [
+   {
+    "t": 17,
+    "type": "step",
+    "step": "intent",
+    "status": "running",
+    "label": "Reading the schema",
+    "model": "claude-haiku-5-5"
+   },
+   {
+    "t": 2078,
+    "type": "step",
+    "step": "intent",
+    "status": "done",
+    "label": "Found organizations and events",
+    "model": "claude-haiku-5-5"
+   },
+   {
+    "t": 2079,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 3464,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Choosing most engaged organizations",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 4319,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Choosing share of orgs highly engaged",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 5210,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Choosing active organizations by week",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 5821,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining date range",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 6283,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining timezone",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 6716,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining exclude test orgs",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 7071,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining exclude internal users",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 7505,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining counted events",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 8176,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining orgs shown",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 8568,
+    "type": "step",
+    "step": "plan",
+    "status": "running",
+    "label": "Planning metrics and assumptions",
+    "detail": "Defining min active days",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 9007,
+    "type": "step",
+    "step": "plan",
+    "status": "done",
+    "label": "Planned engagement ranking",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 9007,
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 12720,
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "detail": "I'm working out the query logic for top organizations by engagement, needing to decide how engagement_event…",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 13978,
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "detail": "1 of 3 written",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 13978,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 17707,
+    "type": "step",
+    "step": "sql",
+    "status": "running",
+    "label": "Writing SQL",
+    "detail": "2 of 3 written",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 20037,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "I'm verifying the join logic between events, organizations, and users has no fanout, confirming the date ra…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 21124,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "The joins look clean with no fanout risk, and the date range, timezone, and exclusion logic all check out.",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 21390,
+    "type": "step",
+    "step": "sql",
+    "status": "done",
+    "label": "Wrote 3 queries",
+    "model": "claude-sonnet-5-5"
+   },
+   {
+    "t": 21429,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "The joins look clean with no fanout risk, and the date range, timezone, and exclusion logic all check out.",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 21571,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "Now I'm double-checking the ordering logic against the metric description to confirm it's ranking correctly…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 25839,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "I'm verifying the join logic between events, organizations, and users has no fanout, confirming the date ra…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 25839,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "Those partial weeks would show artificially lower distinct org counts, making it look like engagement is de…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 25839,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "I'll filter using a condition that checks each week's start and end both fall within the requested date ran…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 25913,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "I'm checking the query logic: defining the current and previous periods with timezone handling, scoping to …",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 26213,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "It all checks out so far, and now I'm moving on to verify the per-period aggregation step.",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 28772,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "Counting engaged orgs per label looks correct without fanout risk since active_days is already keyed per la…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 28773,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "The date ranges line up properly with the as_of day and data availability, timezone bucketing is handled co…",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 28786,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "1 of 3 reviewed",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 28786,
+    "type": "step",
+    "step": "execute",
+    "status": "running",
+    "label": "Running queries read-only"
+   },
+   {
+    "t": 29101,
+    "type": "step",
+    "step": "review",
+    "status": "running",
+    "label": "Reviewing queries",
+    "detail": "2 of 3 reviewed, 1 flagged",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 29101,
+    "type": "step",
+    "step": "execute",
+    "status": "running",
+    "label": "Running queries read-only"
+   },
+   {
+    "t": 29777,
+    "type": "step",
+    "step": "review",
+    "status": "warn",
+    "label": "Reviewed 2 of 3 queries",
+    "model": "claude-opus-5-5"
+   },
+   {
+    "t": 29777,
+    "type": "step",
+    "step": "execute",
+    "status": "warn",
+    "label": "Ran 2 queries in 971 ms, 1 didn't run"
+   }
+  ]
+ }
+}
