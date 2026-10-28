@@ -1,0 +1,276 @@
+{
+  "model": "claude-sonnet-5-5",
+  "proposed_at": "2026-10-28T20:08:59.073Z",
+  "entries": [
+    {
+      "table": "plans",
+      "column": null,
+      "description": "Catalog of 6 pricing plans. Join from subscriptions.plan_id. One plan is flagged legacy, so filter on is_legacy when comparing current pricing."
+    },
+    {
+      "table": "plans",
+      "column": "id",
+      "description": "Primary key for the plan, a small integer. Referenced by subscriptions.plan_id."
+    },
+    {
+      "table": "plans",
+      "column": "name",
+      "description": "Unique display name of the plan. Several plans can share a tier (team has 2)."
+    },
+    {
+      "table": "plans",
+      "column": "tier",
+      "description": "Pricing tier: free, starter, team, business or enterprise. Use it to group plans; the team tier has two plans."
+    },
+    {
+      "table": "plans",
+      "column": "monthly_price_cents",
+      "description": "List price per month in cents (0 to 99900, i.e. up to $999.00). Free plan is 0. Divide by 100 for dollars. Not necessarily what a customer pays; see subscriptions.mrr_cents."
+    },
+    {
+      "table": "plans",
+      "column": "is_legacy",
+      "description": "True for one plan no longer sold to new customers (likely). Existing subscriptions may still reference it."
+    },
+    {
+      "table": "organizations",
+      "column": null,
+      "description": "One row per customer account (about 505). Includes 12 test orgs flagged is_test; exclude them for real customer metrics."
+    },
+    {
+      "table": "organizations",
+      "column": "id",
+      "description": "Primary key for the organization. Referenced by users, subscriptions, invoices, events and support_tickets."
+    },
+    {
+      "table": "organizations",
+      "column": "name",
+      "description": "Company name of the organization. Not guaranteed unique, so use id for joins."
+    },
+    {
+      "table": "organizations",
+      "column": "industry",
+      "description": "Industry of the customer, e.g. Developer tools, Manufacturing, Education, E-commerce, Healthcare, Energy. Always populated."
+    },
+    {
+      "table": "organizations",
+      "column": "country",
+      "description": "Country code of the organization (e.g. US, CA, GB, JP, MX, DE). Always populated; US is the largest group."
+    },
+    {
+      "table": "organizations",
+      "column": "timezone",
+      "description": "IANA timezone name of the org (e.g. America/New_York, UTC). Timestamps are stored in UTC, so convert with this to get the org's local day."
+    },
+    {
+      "table": "organizations",
+      "column": "created_at",
+      "description": "When the org was created, in UTC. Ranges from 2023-05 to 2026-10-27. Use for signup cohorts."
+    },
+    {
+      "table": "organizations",
+      "column": "is_test",
+      "description": "True for 12 test or demo orgs. Exclude (is_test = false) from customer counts, revenue and usage metrics."
+    },
+    {
+      "table": "users",
+      "column": null,
+      "description": "One row per user account (about 6.6k), each belonging to one organization. 145 are internal staff accounts that should be excluded from customer usage metrics."
+    },
+    {
+      "table": "users",
+      "column": "id",
+      "description": "Primary key for the user. Referenced by events.user_id and support_tickets.user_id."
+    },
+    {
+      "table": "users",
+      "column": "org_id",
+      "description": "Organization the user belongs to. Foreign key to organizations.id."
+    },
+    {
+      "table": "users",
+      "column": "email",
+      "description": "User email address, unique across all users. Personal data; avoid selecting unless needed."
+    },
+    {
+      "table": "users",
+      "column": "role",
+      "description": "Role within the org: member (most), viewer, admin or owner. There is one owner per organization (505 owners for 505 orgs)."
+    },
+    {
+      "table": "users",
+      "column": "created_at",
+      "description": "When the user account was created, in UTC. Ranges from 2023-05 to 2026-10-28."
+    },
+    {
+      "table": "users",
+      "column": "last_seen_at",
+      "description": "Most recent activity time in UTC. NULL (about 6%) likely means the user never logged in or was never active."
+    },
+    {
+      "table": "users",
+      "column": "is_internal",
+      "description": "True for 145 internal or staff accounts. Exclude (is_internal = false) from activity and engagement metrics."
+    },
+    {
+      "table": "subscriptions",
+      "column": null,
+      "description": "One row per subscription period for an org (about 681). Orgs can have several rows over time, as canceled rows with reason upgrade or downgrade represent plan changes, not lost customers."
+    },
+    {
+      "table": "subscriptions",
+      "column": "id",
+      "description": "Primary key for the subscription. Referenced by invoices.subscription_id."
+    },
+    {
+      "table": "subscriptions",
+      "column": "org_id",
+      "description": "Organization that owns the subscription. Foreign key to organizations.id."
+    },
+    {
+      "table": "subscriptions",
+      "column": "plan_id",
+      "description": "Plan the subscription is on. Foreign key to plans.id. NULL in about 1.6% of rows, so use a left join to avoid dropping them."
+    },
+    {
+      "table": "subscriptions",
+      "column": "status",
+      "description": "Current state: active (362), canceled (305), trialing (8) or past_due (6). Only active, and arguably past_due, count as current paying subscriptions."
+    },
+    {
+      "table": "subscriptions",
+      "column": "started_at",
+      "description": "When the subscription started, in UTC. Ranges from 2023-05 to 2026-10-27."
+    },
+    {
+      "table": "subscriptions",
+      "column": "canceled_at",
+      "description": "When the subscription ended, in UTC. NULL (about 55%) means not canceled. Set for canceled rows, including those replaced by an upgrade or downgrade."
+    },
+    {
+      "table": "subscriptions",
+      "column": "cancel_reason",
+      "description": "Why it ended: upgrade (167), churn (129) or downgrade (9). NULL means not canceled. Only churn is true customer loss; upgrade and downgrade are plan changes."
+    },
+    {
+      "table": "subscriptions",
+      "column": "mrr_cents",
+      "description": "Monthly recurring revenue in cents for this subscription (0 to 99900). Never negative. Sum only non-canceled rows for current MRR. Free plans are 0."
+    },
+    {
+      "table": "invoices",
+      "column": null,
+      "description": "One row per invoice (about 2.3k), from 2025-11 to 2026-10. Includes 19 negative amounts that are likely credits or refunds, so check before summing revenue."
+    },
+    {
+      "table": "invoices",
+      "column": "id",
+      "description": "Primary key for the invoice."
+    },
+    {
+      "table": "invoices",
+      "column": "org_id",
+      "description": "Organization billed. Foreign key to organizations.id."
+    },
+    {
+      "table": "invoices",
+      "column": "subscription_id",
+      "description": "Subscription this invoice belongs to. Foreign key to subscriptions.id."
+    },
+    {
+      "table": "invoices",
+      "column": "amount_cents",
+      "description": "Invoice amount in cents. Ranges from -99900 to 99900; 19 rows are negative (likely credits or refunds). Divide by 100 for dollars."
+    },
+    {
+      "table": "invoices",
+      "column": "status",
+      "description": "paid (2284), void (7) or open (5). For revenue use paid and exclude void; open is not yet collected."
+    },
+    {
+      "table": "invoices",
+      "column": "issued_at",
+      "description": "When the invoice was issued, in UTC. Use for billing-period revenue by month."
+    },
+    {
+      "table": "invoices",
+      "column": "paid_at",
+      "description": "When payment was received, in UTC. NULL (0.5%) for unpaid invoices. Some values fall after today (up to 2026-11-01), so check data quality."
+    },
+    {
+      "table": "events",
+      "column": null,
+      "description": "Product usage log (about 323k rows), one row per login or feature use by a user. Join to users and exclude internal users and test orgs for real usage."
+    },
+    {
+      "table": "events",
+      "column": "id",
+      "description": "Primary key, a bigint, for the event."
+    },
+    {
+      "table": "events",
+      "column": "user_id",
+      "description": "User who performed the event. Foreign key to users.id."
+    },
+    {
+      "table": "events",
+      "column": "org_id",
+      "description": "Organization of the user at the time. Foreign key to organizations.id."
+    },
+    {
+      "table": "events",
+      "column": "type",
+      "description": "Event kind: feature_used (186k) or login (137k). Use login for active-user counts."
+    },
+    {
+      "table": "events",
+      "column": "feature",
+      "description": "Feature used: dashboards, sql_editor, ai_insights, exports or alerts. NULL for all login events. Integrations is documented in the schema but absent from the profile."
+    },
+    {
+      "table": "events",
+      "column": "occurred_at",
+      "description": "When the event happened, in UTC. Covers 2025-11-01 to 2026-10-27. Convert to the org's timezone for local-day grouping."
+    },
+    {
+      "table": "support_tickets",
+      "column": null,
+      "description": "One row per support ticket (about 2.1k), from 2025-11 to 2026-10. Open tickets have no resolved_at."
+    },
+    {
+      "table": "support_tickets",
+      "column": "id",
+      "description": "Primary key for the ticket."
+    },
+    {
+      "table": "support_tickets",
+      "column": "org_id",
+      "description": "Organization that raised the ticket. Foreign key to organizations.id."
+    },
+    {
+      "table": "support_tickets",
+      "column": "user_id",
+      "description": "User who filed the ticket. NULL (about 10%) when the requester is unknown. Foreign key to users.id."
+    },
+    {
+      "table": "support_tickets",
+      "column": "category",
+      "description": "Topic: bug, billing, integrations, account, feature_request or performance. Always populated."
+    },
+    {
+      "table": "support_tickets",
+      "column": "priority",
+      "description": "low, normal, high or urgent. NULL for about 12% of tickets, meaning priority was not set."
+    },
+    {
+      "table": "support_tickets",
+      "column": "created_at",
+      "description": "When the ticket was opened, in UTC."
+    },
+    {
+      "table": "support_tickets",
+      "column": "resolved_at",
+      "description": "When the ticket was resolved, in UTC. NULL (about 4%) means still unresolved. Resolution time is resolved_at minus created_at."
+    }
+  ]
+}

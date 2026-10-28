@@ -30,8 +30,20 @@ export function LineChart({ series, unit = "count", height = 200, label }: { ser
     const all = series.flatMap((s) => s.points);
     const t = all.map((p) => p.x.getTime());
     const xsAll = [...new Set(t)].sort((a, b) => a - b);
-    const max = Math.max(0, ...all.map((p) => p.y));
-    const min = Math.min(0, ...all.map((p) => p.y));
+    let max = Math.max(...all.map((p) => p.y));
+    let min = Math.min(...all.map((p) => p.y));
+    // Lines (unlike bars) needn't start at zero. When values sit in a narrow
+    // band far from zero (e.g. retention at 95–100%), fit the band so the
+    // change is visible; otherwise anchor at zero.
+    const span = max - min;
+    if (min > 0 && span < max * 0.35) {
+      const pad = Math.max(span * 0.25, Math.abs(max) * 0.01);
+      min -= pad;
+      max += pad;
+    } else {
+      min = Math.min(0, min);
+      max = Math.max(0, max);
+    }
     return {
       x: scaleUtc({ domain: [new Date(Math.min(...t)), new Date(Math.max(...t))], range: [0, innerW] }),
       y: scaleLinear({ domain: [min, max === min ? min + 1 : max], range: [innerH, 0], nice: 4 }),

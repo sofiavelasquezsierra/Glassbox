@@ -39,7 +39,7 @@ export type PlanMetric = z.infer<typeof PlanMetric>;
 
 export const PlanOutput = z
   .object({
-    status: line(120),
+    status: line(120).describe('Past-tense summary shown when the step finishes, e.g. "Planned 3 retention metrics"'),
     headline: line(240).describe("One-line framing of how the question will be answered"),
     metrics: z.array(PlanMetric).min(1).max(4),
     assumptions: z.array(Assumption).min(1).max(8),
