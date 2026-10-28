@@ -9,6 +9,7 @@ Built in phases (schema → agent → design system → demo UI → cached mode/
 - `npm run db:migrate`, `npm run db:seed` (`-- --dry` to generate only), `npm run db:verify`
 - `npm run ask -- "question"`: one live agent run in the terminal (costs API money)
 - `npm run eval`: golden set (eval/golden.ts) → src/data/eval-results.json; `-- --regrade` re-scores saved traces for free
+- `npm run record` (re-record suggested-question runs), `npm run dictionary:propose`
 - `npm run dev` / `npm run build`
 - Scripts that import `src/server/**` run with `tsx --conditions=react-server` (so `server-only` resolves)
 
@@ -21,5 +22,7 @@ Built in phases (schema → agent → design system → demo UI → cached mode/
 - **The seed is deterministic** (`supabase/generate.ts`, mulberry32, no clock). If you change it, re-run `db:seed`, update `supabase/TRAPS.md` numbers, and re-run the eval.
 - **Eval honesty:** never edit ground truth to match agent output; truth definitions are documented in `eval/golden.ts`. Keep every full run in `history`.
 - **Honesty:** never invent user research, metrics, quotes or eval results. Placeholders for content only the author can provide are marked `TODO(you):`.
+- **Content pages quote only measured numbers.** /stack and /case-study read stats from `src/data/runs` and `src/data/eval-results.json` (`src/lib/run-stats.ts`); never hand-type a number that can drift. Verify any claim about agent behaviour against saved traces.
+- **UI:** use tokens from `src/styles/tokens.css` (no raw hex in components); amber is reserved for assumptions/changed state; verdict colors never double as series; every state (loading, empty, error, partial) is designed; check new UI with axe and at 1440/820 in light and dark.
 - Keep dependencies minimal; justify additions in the README.
 - Code style: TypeScript strict, `noUncheckedIndexedAccess`; comments explain *why*, sparingly.
