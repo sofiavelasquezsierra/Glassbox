@@ -21,11 +21,11 @@ export function ActivityRail({ state }: { state: RunState }) {
           Agent activity
         </h2>
         {state.status !== "idle" && (
-          <span className="font-mono text-2xs text-ink-3 tabular">
+          <span className="truncate font-mono text-2xs text-ink-3 tabular">
             {state.mode === "cached"
               ? state.elapsedMs
                 ? `recorded · original run ${(state.elapsedMs / 1000).toFixed(1)}s`
-                : "replaying a recorded run"
+                : "replaying"
               : `live · ${(total / 1000).toFixed(1)}s`}
           </span>
         )}

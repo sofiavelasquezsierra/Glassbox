@@ -79,7 +79,7 @@ export function useAgentRun() {
         const cached = opts.fallback?.(reason);
         if (cached && !ctrl.signal.aborted) {
           dispatch({ type: "start", question: cached.question, mode: "cached", at: Date.now() });
-          dispatch({ type: "notice", message: reason });
+          dispatch({ type: "notice", message: `${reason} Showing the recorded run for “${cached.question}” instead.` });
           await replay(cached, ctrl.signal, 1.5);
         } else {
           dispatch({ type: "fail", message: reason, retryable: true });
@@ -102,7 +102,7 @@ export function useAgentRun() {
         for await (const event of readSse(res, ctrl.signal)) {
           if (event.type === "plan") sawPlan = true;
           if (event.type === "run.error" && !sawPlan && event.retryable && opts.fallback) {
-            await fallBack(`${event.message} Showing a recorded run instead.`);
+            await fallBack(event.message);
             return;
           }
           dispatch({ type: "event", event, at: Date.now() });

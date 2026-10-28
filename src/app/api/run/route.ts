@@ -1,5 +1,6 @@
 import { RunRequest } from "@/lib/schemas";
 import { runAgent } from "@/server/agent/pipeline";
+import { checkLimit, LIMITS } from "@/server/rate-limit";
 import { sseResponse } from "@/server/sse";
 
 export const runtime = "nodejs";
@@ -10,6 +11,8 @@ export const maxDuration = 120;
 export async function POST(req: Request) {
   const parsed = RunRequest.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid request" }, { status: 400 });
+  const limit = await checkLimit(req, LIMITS.run);
+  if (!limit.ok) return Response.json({ error: limit.reason }, { status: limit.status });
   // Hard ceiling on a run, on top of per-step token caps.
   const signal = AbortSignal.any([req.signal, AbortSignal.timeout(110_000)]);
   return sseResponse(runAgent({ ...parsed.data, signal }), req.signal);

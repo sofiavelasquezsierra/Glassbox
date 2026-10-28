@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CACHED_RUNS, findCached } from "@/data/runs";
+import { SUGGESTED } from "@/data/suggested";
 import { useAgentRun } from "@/lib/use-agent-run";
 import { useDictionary } from "@/lib/use-dictionary";
 import { AskBar } from "../system/AskBar";
@@ -16,7 +17,6 @@ import { HowItWorks } from "./HowItWorks";
 import { ModeToggle, type Mode } from "./ModeToggle";
 import { WalkthroughVideo } from "./WalkthroughVideo";
 
-export const SUGGESTED = ["How's retention this quarter?", "Which plans drive the most revenue growth?", "Where are support tickets spiking?", "Who are our most engaged organizations?"];
 
 const isTyping = (t: EventTarget | null) => t instanceof HTMLElement && (t.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName));
 

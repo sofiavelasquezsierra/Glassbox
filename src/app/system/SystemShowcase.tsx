@@ -421,14 +421,14 @@ export function SystemShowcase() {
         <Section id="askbar" lede="Where a question starts. Suggested questions remove the blank-page problem for first-time visitors. Press / anywhere to focus it." props={[["onAsk", "(q: string) => void", "Called with the trimmed question (3–300 chars)"], ["suggestions", "string[]", "Shown as one-click chips"], ["running", "boolean", "Swaps Ask for Stop"], ["trailing", "ReactNode", "Slot for the Cached/Live toggle"]]}>
           <div className="space-y-4">
             <Specimen label="Default with suggestions">
-              <AskBar onAsk={() => {}} suggestions={["How's retention this quarter?", "Where are support tickets spiking?"]} />
+              <AskBar id="ask-demo-1" label="Example: default ask bar" onAsk={() => {}} suggestions={["How's retention this quarter?", "Where are support tickets spiking?"]} />
             </Specimen>
             <div className="grid gap-4 md:grid-cols-2">
               <Specimen label="Running">
-                <AskBar onAsk={() => {}} running onCancel={() => {}} defaultValue="Who are our most engaged organizations?" />
+                <AskBar id="ask-demo-2" label="Example: running" onAsk={() => {}} running onCancel={() => {}} defaultValue="Who are our most engaged organizations?" />
               </Specimen>
               <Specimen label="Disabled (rate limited)">
-                <AskBar onAsk={() => {}} disabled defaultValue="Which plans drive the most revenue growth?" />
+                <AskBar id="ask-demo-3" label="Example: disabled" onAsk={() => {}} disabled defaultValue="Which plans drive the most revenue growth?" />
               </Specimen>
             </div>
           </div>
@@ -559,7 +559,7 @@ export function SystemShowcase() {
 
         <section className="border-t border-rule py-10">
           <p className="eyebrow mb-2">Data table (used inside ChartFrame and ProvenancePanel)</p>
-          <DataTable result={fixtures.table.result!} pageSize={4} caption="Ticket change by category" />
+          <DataTable result={fixtures.table.result!} pageSize={4} caption="Data table specimen: ticket change by category" />
         </section>
       </div>
 

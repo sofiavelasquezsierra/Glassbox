@@ -18,7 +18,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "dictionary:propose": "tsx --conditions=react-server scripts/propose-dictionary.ts"
+    "dictionary:propose": "tsx --conditions=react-server scripts/propose-dictionary.ts",
+    "record": "tsx --conditions=react-server scripts/record-runs.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

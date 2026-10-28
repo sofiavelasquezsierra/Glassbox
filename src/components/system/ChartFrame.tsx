@@ -120,6 +120,12 @@ export const ChartFrame = forwardRef<
       </header>
 
       <div className={cn("relative flex-1 px-4", kpi ? "pt-3 pb-3" : "pt-4 pb-3")}>
+        {phase === "rerunning" && (
+          // Re-running keeps the old numbers fully legible; a hairline shows work in progress.
+          <span aria-hidden className="absolute inset-x-4 top-0 h-px overflow-hidden bg-accent/30">
+            <span className="block h-full w-1/3 bg-accent motion-safe:animate-[indeterminate_1.1s_var(--ease-standard)_infinite]" />
+          </span>
+        )}
         <AnimatePresence mode="wait" initial={false}>
           {loading ? (
             <motion.div key="loading" exit={{ opacity: 0, transition: { duration: duration.fast } }}>
@@ -150,7 +156,7 @@ export const ChartFrame = forwardRef<
             <motion.div
               key="chart"
               initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: phase === "rerunning" ? 0.55 : 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: duration.base, ease: ease.standard }}
               aria-busy={phase === "rerunning"}
             >

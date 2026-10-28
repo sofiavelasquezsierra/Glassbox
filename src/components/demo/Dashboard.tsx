@@ -122,7 +122,7 @@ export const Dashboard = forwardRef<
             const v = state.metrics[id]!;
             const wide = v.metric.chart === "table" || (v.metric.chart !== "kpi" && order.filter((x) => state.metrics[x]!.metric.chart !== "kpi").length === 1);
             return (
-              <motion.div key={id} layout="position" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: duration.base, ease: ease.standard, delay: i * 0.04 }} className={cn(wide && "md:col-span-2")}>
+              <motion.div key={id} layout="position" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: duration.base, ease: ease.standard, delay: i * 0.04 }} className={cn("flex", wide && "md:col-span-2")}>
                 <ChartFrame
                   ref={(el) => {
                     cardRefs.current[i] = el;
@@ -135,6 +135,7 @@ export const Dashboard = forwardRef<
                     onOpen(id);
                   }}
                   onRetry={onRetry}
+                  className="w-full"
                 />
               </motion.div>
             );

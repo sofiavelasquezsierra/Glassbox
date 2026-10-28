@@ -40,7 +40,7 @@ export function ReviewerBadge({
     >
       <s.Icon size={size === "sm" ? 12 : 14} />
       {label ?? s.label}
-      {rewritten && <span className="font-normal opacity-80">· fixed</span>}
+      {rewritten && <span className="font-normal">· fixed</span>}
     </span>
   );
 }

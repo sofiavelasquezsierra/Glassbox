@@ -19,8 +19,11 @@ export const AskBar = forwardRef<
     disabled?: boolean;
     defaultValue?: string;
     trailing?: React.ReactNode;
+    /** Accessible name for the search landmark; must be unique per page. */
+    label?: string;
+    id?: string;
   }
->(function AskBar({ onAsk, onCancel, suggestions = [], running, disabled, defaultValue = "", trailing }, ref) {
+>(function AskBar({ onAsk, onCancel, suggestions = [], running, disabled, defaultValue = "", trailing, label = "Ask the agent", id = "ask" }, ref) {
   const [value, setValue] = useState(defaultValue);
   const q = value.trim();
   const valid = q.length >= 3 && q.length <= 300;
@@ -29,6 +32,7 @@ export const AskBar = forwardRef<
     <div>
       <form
         role="search"
+        aria-label={label}
         onSubmit={(e) => {
           e.preventDefault();
           if (valid && !running) onAsk(q);
@@ -36,18 +40,18 @@ export const AskBar = forwardRef<
         className={cn(
           "flex items-center gap-2 rounded-lg border bg-surface py-1.5 pr-1.5 pl-4 shadow-1 transition-colors",
           "focus-within:border-ink-3 focus-within:shadow-2",
-          disabled ? "border-rule opacity-70" : "border-rule-strong",
+          disabled ? "border-rule bg-sunk" : "border-rule-strong",
         )}
       >
         <span aria-hidden className="font-mono text-sm text-ink-3 select-none">
           ask ›
         </span>
-        <label htmlFor="ask" className="sr-only">
+        <label htmlFor={id} className="sr-only">
           Ask a question about Northwind Cloud&apos;s data
         </label>
         <input
           ref={ref}
-          id="ask"
+          id={id}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           disabled={disabled}

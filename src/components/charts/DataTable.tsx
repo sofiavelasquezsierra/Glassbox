@@ -16,7 +16,7 @@ export function DataTable({ result, pageSize = 10, dense, caption }: { result: P
   const rows = result.rows.slice(page * pageSize, (page + 1) * pageSize);
   return (
     <div>
-      <div className="overflow-x-auto rounded-md border border-rule">
+      <div className="overflow-x-auto rounded-md border border-rule" tabIndex={0} role="region" aria-label={caption ?? "Query results"}>
         <table className="w-full border-collapse text-left text-xs">
           {caption && <caption className="sr-only">{caption}</caption>}
           <thead className="bg-sunk">
