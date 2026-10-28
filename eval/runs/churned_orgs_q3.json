@@ -1,0 +1,638 @@
+{
+  "latency_ms": 38020,
+  "events": [
+    {
+      "type": "run.start",
+      "run_id": "62cfc184-7841-47c8-9d0d-36b852dd9224",
+      "question": "How many customers churned in Q3 2026?",
+      "as_of": "2026-10-28",
+      "mode": "live"
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "running",
+      "label": "Reading the schema",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "intent",
+      "intent": {
+        "status": "Found subscriptions and organizations for churn analysis",
+        "category": "retention",
+        "tables": [
+          "subscriptions",
+          "organizations"
+        ],
+        "answerable": true,
+        "reason_if_unanswerable": null
+      }
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "done",
+      "label": "Found subscriptions and organizations for churn analysis",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Churned customers”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Churned customers by week”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Churned customers by plan tier”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Period”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Timezone”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Exclude test orgs”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Churn reason only”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "plan",
+      "plan": {
+        "status": "Planning churn metrics",
+        "headline": "Counts customers whose paid subscription ended with a churn reason in Q3 2026, excluding upgrades and downgrades.",
+        "metrics": [
+          {
+            "id": "churned_customers",
+            "title": "Churned customers",
+            "description": "Number of distinct organizations with a subscription canceled for reason 'churn' in the selected period, with no other active or trialing subscription at the end of the period (so plan changes are not counted).",
+            "chart": "kpi",
+            "unit": "count",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "exclude_test_accounts",
+              "churn_reason_only"
+            ]
+          },
+          {
+            "id": "churned_by_week",
+            "title": "Churned customers by week",
+            "description": "Weekly count of distinct organizations whose subscription was canceled for churn during the selected period, bucketed in the chosen timezone.",
+            "chart": "line",
+            "unit": "count",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "exclude_test_accounts",
+              "churn_reason_only"
+            ]
+          },
+          {
+            "id": "churned_by_plan",
+            "title": "Churned customers by plan tier",
+            "description": "Distinct churned organizations in the selected period, grouped by the plan tier of the canceled subscription. Subscriptions with no plan are shown as unknown.",
+            "chart": "bar",
+            "unit": "count",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "exclude_test_accounts",
+              "churn_reason_only"
+            ]
+          }
+        ],
+        "assumptions": [
+          {
+            "key": "date_range",
+            "label": "Period",
+            "rationale": "Q3 2026 runs July 1 through September 30, as asked.",
+            "type": "date_range",
+            "value": {
+              "preset": "custom",
+              "start": "2026-07-01",
+              "end": "2026-09-30"
+            }
+          },
+          {
+            "key": "timezone",
+            "label": "Timezone",
+            "rationale": "Cancellation dates are assigned to calendar days in UTC unless you prefer your business timezone.",
+            "type": "timezone",
+            "value": "UTC"
+          },
+          {
+            "key": "exclude_test_accounts",
+            "label": "Exclude test orgs",
+            "rationale": "The data dictionary says test, demo and load-test tenants should be excluded from business metrics.",
+            "type": "bool",
+            "value": true
+          },
+          {
+            "key": "churn_reason_only",
+            "label": "Churn reason only",
+            "rationale": "Plan changes close the old subscription row with reason upgrade or downgrade, so only cancel_reason = 'churn' counts as a lost customer.",
+            "type": "bool",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "done",
+      "label": "Planning churn metrics",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "I need to define churned_by_week as the weekly count of distinct orgs whose subscription canceled for churn…",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "I'm weighing whether to apply the same consistency rule as the KPI—excluding orgs that still have another a…",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "churned_customers",
+      "sql": "WITH canceled AS (\n  SELECT s.org_id, s.canceled_at\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND s.canceled_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n),\ncanceled_orgs AS (\n  SELECT org_id, max(canceled_at) AS last_canceled_at FROM canceled GROUP BY org_id\n),\nprev_canceled AS (\n  SELECT s.org_id\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text\n    AND s.canceled_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n  GROUP BY s.org_id\n)\nSELECT\n  (SELECT count(*) FROM canceled_orgs c\n   WHERE NOT EXISTS (\n     SELECT 1 FROM northwind.subscriptions s2\n     WHERE s2.org_id = c.org_id\n       AND s2.status IN ('active','trialing','past_due')\n       AND s2.canceled_at IS NULL\n       AND s2.started_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n   )) AS value,\n  (SELECT count(*) FROM prev_canceled p\n   WHERE NOT EXISTS (\n     SELECT 1 FROM northwind.subscriptions s2\n     WHERE s2.org_id = p.org_id\n       AND s2.status IN ('active','trialing','past_due')\n       AND s2.canceled_at IS NULL\n       AND s2.started_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text\n   )) AS previous_value",
+      "explanation": "Counts distinct orgs with a subscription canceled (reason 'churn' when enabled) in the period, excluding orgs that still hold a live subscription started before period end, with prior-period comparison.",
+      "params": [
+        "date_range_start",
+        "timezone",
+        "date_range_end",
+        "exclude_test_accounts",
+        "churn_reason_only",
+        "date_range_prev_start",
+        "date_range_prev_end"
+      ],
+      "signature": "UDpkeft_JMpOKmvNHZTI5x8nLWpFGkV59xqDfxQM-_0"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "1 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "churned_by_plan",
+      "sql": "WITH churned AS (\n  SELECT s.org_id, s.id AS sub_id, s.canceled_at, COALESCE(p.tier, 'unknown') AS tier\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  LEFT JOIN northwind.plans p ON p.id = s.plan_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND s.canceled_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    -- exclude orgs that still hold another live subscription at period end (plan changes)\n    AND NOT EXISTS (\n      SELECT 1 FROM northwind.subscriptions s2\n      WHERE s2.org_id = s.org_id\n        AND s2.id <> s.id\n        AND s2.status IN ('active','trialing')\n        AND s2.started_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n        AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp at time zone :timezone::text)\n    )\n),\n-- one tier per org: the latest canceled subscription in the period\nper_org AS (\n  SELECT DISTINCT ON (org_id) org_id, tier\n  FROM churned\n  ORDER BY org_id, canceled_at DESC, sub_id DESC\n)\nSELECT tier AS label, count(*)::int AS value\nFROM per_org\nGROUP BY tier\nORDER BY value DESC, label\nLIMIT 20",
+      "explanation": "Counts distinct orgs with a churn-reason cancellation in the period and no other live subscription at period end, assigned to the tier of their latest canceled subscription (unknown if no plan).",
+      "params": [
+        "date_range_start",
+        "timezone",
+        "date_range_end",
+        "churn_reason_only",
+        "exclude_test_accounts"
+      ],
+      "signature": "0sVuV-ckHPQGn2Hdt6SSMiFjd1gFIDiRZRDL12dSk9g"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "2 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm examining a flaw in the query logic: the check for \"no other active subscription\" relies on the subscri…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm spotting a flaw in the churn query: checking current status instead of status as of the period end mean…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "churned_by_week",
+      "sql": "WITH churned AS (\n  SELECT DISTINCT s.org_id,\n         date_trunc('week', s.canceled_at AT TIME ZONE :timezone::text)::date AS week_start\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text\n    AND s.canceled_at <  (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    -- plan changes: skip orgs that still have a live subscription at period end\n    AND NOT EXISTS (\n      SELECT 1 FROM northwind.subscriptions s2\n      WHERE s2.org_id = s.org_id\n        AND s2.id <> s.id\n        AND s2.started_at < (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n        AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text)\n    )\n)\nSELECT week_start AS x, count(*)::int AS y\nFROM churned\nGROUP BY week_start\nORDER BY week_start",
+      "explanation": "Counts distinct organizations per week (in the chosen timezone) whose subscription was canceled for churn within the period, excluding test orgs and orgs that still have another live subscription at period end.",
+      "params": [
+        "timezone",
+        "date_range_start",
+        "date_range_end",
+        "churn_reason_only",
+        "exclude_test_accounts"
+      ],
+      "signature": "V9Wjjx-kz87TXNLK8mg1vIVCNYiQlYNzoI4wWy6tWwI"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "done",
+      "label": "Wrote 3 queries",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm examining a flaw in the query logic: the check for \"no other active subscription\" relies on the subscri…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "The previous-period check has this same point-in-time issue, and it's worse there since more time has passe…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm also considering edge cases like resubscriptions after churn and whether trialing subscriptions should …",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "My conclusion is to flag the point-in-time logic as needing a rewrite: in the NOT EXISTS subquery, I should…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm checking the weekly churn query logic—noting that distinct org_id/week_start pairs could double-count a…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm also examining the NOT EXISTS subquery, which checks for active subscriptions by canceled_at timing but…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "churned_by_plan",
+        "verdict": "warn",
+        "summary": "The churned-by-tier breakdown is broadly right, but the check for whether an org still has a live subscription uses today's status instead of the status at the end of Q3, so a few plan-change orgs may be miscounted as churned.",
+        "issues": [
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "In the NOT EXISTS subquery, replace s2.status IN ('active','trialing') with a point-in-time test on started_at/canceled_at; status is today's value, so a sub live on 2026-10-01 but canceled later counts as not live."
+          },
+          {
+            "code": "question_mismatch",
+            "severity": "warn",
+            "message": "The s2.status filter also skips 'past_due' subscriptions, which are still live, so orgs moved to a past_due replacement plan are counted as churned."
+          }
+        ],
+        "rewritten_sql": "WITH churned AS (\n  SELECT s.org_id, s.id AS sub_id, s.canceled_at, COALESCE(p.tier, 'unknown') AS tier\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  LEFT JOIN northwind.plans p ON p.id = s.plan_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND s.canceled_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND NOT EXISTS (\n      SELECT 1 FROM northwind.subscriptions s2\n      WHERE s2.org_id = s.org_id\n        AND s2.id <> s.id\n        AND s2.started_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n        AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp at time zone :timezone::text)\n    )\n),\nper_org AS (\n  SELECT DISTINCT ON (org_id) org_id, tier\n  FROM churned\n  ORDER BY org_id, canceled_at DESC, sub_id DESC\n)\nSELECT tier AS label, count(*)::int AS value\nFROM per_org\nGROUP BY tier\nORDER BY value DESC, label\nLIMIT 20"
+      },
+      "final_sql": "WITH churned AS (\n  SELECT s.org_id, s.id AS sub_id, s.canceled_at, COALESCE(p.tier, 'unknown') AS tier\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  LEFT JOIN northwind.plans p ON p.id = s.plan_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_start::date)::timestamp at time zone :timezone::text\n    AND s.canceled_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND NOT EXISTS (\n      SELECT 1 FROM northwind.subscriptions s2\n      WHERE s2.org_id = s.org_id\n        AND s2.id <> s.id\n        AND s2.started_at < (:date_range_end::date)::timestamp at time zone :timezone::text\n        AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp at time zone :timezone::text)\n    )\n),\nper_org AS (\n  SELECT DISTINCT ON (org_id) org_id, tier\n  FROM churned\n  ORDER BY org_id, canceled_at DESC, sub_id DESC\n)\nSELECT tier AS label, count(*)::int AS value\nFROM per_org\nGROUP BY tier\nORDER BY value DESC, label\nLIMIT 20",
+      "signature": "r6DSo9YTajMuBvmYqhtDp4U6dU683ZJ8a1bh_Xhfdw4"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "1 of 3 reviewed, 1 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "running",
+      "label": "Running queries read-only"
+    },
+    {
+      "type": "result",
+      "metric_id": "churned_by_plan",
+      "result": {
+        "columns": [
+          {
+            "name": "label",
+            "type": "text"
+          },
+          {
+            "name": "value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "team",
+            13
+          ],
+          [
+            "starter",
+            8
+          ],
+          [
+            "free",
+            7
+          ],
+          [
+            "business",
+            2
+          ],
+          [
+            "unknown",
+            1
+          ]
+        ],
+        "row_count": 5,
+        "truncated": false,
+        "runtime_ms": 113,
+        "executed_at": "2026-10-28T18:09:05.142Z",
+        "plan_cost": 33,
+        "params": {
+          "date_range_start": "2026-07-01",
+          "timezone": "UTC",
+          "date_range_end": "2026-10-01",
+          "churn_reason_only": true,
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "churned_customers",
+        "verdict": "warn",
+        "summary": "The count is roughly right, but the check for whether a churned customer still had another live subscription uses today's status instead of the state at the end of each period, so some plan-change orgs may be miscounted as churned.",
+        "issues": [
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "The NOT EXISTS check filters s2.status IN (...) AND s2.canceled_at IS NULL, which reflects today's status. Orgs whose other subscription was live at period end but canceled later get counted as churned. Test as of the period end instead: started_at < end AND (canceled_at IS NULL OR canceled_at >= end)."
+          },
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "previous_value has the same current-status problem, and it is worse there: anything canceled between 2026-07-01 and today is ignored when testing for a live subscription at :date_range_prev_end."
+          }
+        ],
+        "rewritten_sql": "WITH canceled AS (SELECT DISTINCT s.org_id FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id WHERE s.canceled_at IS NOT NULL AND s.canceled_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND s.canceled_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')), prev_canceled AS (SELECT DISTINCT s.org_id FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id WHERE s.canceled_at IS NOT NULL AND s.canceled_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text AND s.canceled_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')) SELECT (SELECT count(*) FROM canceled c WHERE NOT EXISTS (SELECT 1 FROM northwind.subscriptions s2 WHERE s2.org_id = c.org_id AND s2.started_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp at time zone :timezone::text))) AS value, (SELECT count(*) FROM prev_canceled p WHERE NOT EXISTS (SELECT 1 FROM northwind.subscriptions s2 WHERE s2.org_id = p.org_id AND s2.started_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_prev_end::date)::timestamp at time zone :timezone::text))) AS previous_value"
+      },
+      "final_sql": "WITH canceled AS (SELECT DISTINCT s.org_id FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id WHERE s.canceled_at IS NOT NULL AND s.canceled_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND s.canceled_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')), prev_canceled AS (SELECT DISTINCT s.org_id FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id WHERE s.canceled_at IS NOT NULL AND s.canceled_at >= (:date_range_prev_start::date)::timestamp at time zone :timezone::text AND s.canceled_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')) SELECT (SELECT count(*) FROM canceled c WHERE NOT EXISTS (SELECT 1 FROM northwind.subscriptions s2 WHERE s2.org_id = c.org_id AND s2.started_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp at time zone :timezone::text))) AS value, (SELECT count(*) FROM prev_canceled p WHERE NOT EXISTS (SELECT 1 FROM northwind.subscriptions s2 WHERE s2.org_id = p.org_id AND s2.started_at < (:date_range_prev_end::date)::timestamp at time zone :timezone::text AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_prev_end::date)::timestamp at time zone :timezone::text))) AS previous_value",
+      "signature": "Rca0gIW_wjQ8qzaUrytOAUuNmgfZgAV0P4IfoJp56zY"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "2 of 3 reviewed, 2 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "churned_customers",
+      "result": {
+        "columns": [
+          {
+            "name": "value",
+            "type": "number"
+          },
+          {
+            "name": "previous_value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            31,
+            27
+          ]
+        ],
+        "row_count": 1,
+        "truncated": false,
+        "runtime_ms": 122,
+        "executed_at": "2026-10-28T18:09:10.380Z",
+        "plan_cost": 83,
+        "params": {
+          "date_range_start": "2026-07-01",
+          "timezone": "UTC",
+          "date_range_end": "2026-10-01",
+          "exclude_test_accounts": true,
+          "churn_reason_only": true,
+          "date_range_prev_start": "2026-03-31",
+          "date_range_prev_end": "2026-07-01"
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "churned_by_week",
+        "verdict": "warn",
+        "summary": "The churn logic, timezone handling, test exclusion and Q3 boundaries are correct, but weeks with no churn are left out of the line and an org can be counted in more than one week, so I fixed both.",
+        "issues": [
+          {
+            "code": "other",
+            "severity": "warn",
+            "message": "Weeks with zero churned orgs produce no row, so the line chart skips or interpolates them; generate the full set of weeks with generate_series and LEFT JOIN the churn counts onto it."
+          },
+          {
+            "code": "join_fanout",
+            "severity": "warn",
+            "message": "SELECT DISTINCT s.org_id, week_start counts an org once per week, so an org with two churn cancellations in different weeks is counted twice; assign each org to its first churn week with min() GROUP BY s.org_id so the weeks add up to the KPI."
+          }
+        ],
+        "rewritten_sql": "WITH churned AS (\n  SELECT s.org_id,\n         min(date_trunc('week', s.canceled_at AT TIME ZONE :timezone::text))::date AS week_start\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text\n    AND s.canceled_at <  (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND NOT EXISTS (\n      SELECT 1 FROM northwind.subscriptions s2\n      WHERE s2.org_id = s.org_id\n        AND s2.id <> s.id\n        AND s2.started_at < (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n        AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text)\n    )\n  GROUP BY s.org_id\n),\nweeks AS (\n  SELECT generate_series(\n           date_trunc('week', (:date_range_start::date)::timestamp),\n           ((:date_range_end::date) - 1)::timestamp,\n           interval '1 week'\n         )::date AS week_start\n)\nSELECT w.week_start AS x, count(c.org_id)::int AS y\nFROM weeks w\nLEFT JOIN churned c ON c.week_start = w.week_start\nGROUP BY w.week_start\nORDER BY w.week_start"
+      },
+      "final_sql": "WITH churned AS (\n  SELECT s.org_id,\n         min(date_trunc('week', s.canceled_at AT TIME ZONE :timezone::text))::date AS week_start\n  FROM northwind.subscriptions s\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE s.canceled_at IS NOT NULL\n    AND s.canceled_at >= (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text\n    AND s.canceled_at <  (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n    AND (NOT :churn_reason_only::boolean OR s.cancel_reason = 'churn')\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n    AND NOT EXISTS (\n      SELECT 1 FROM northwind.subscriptions s2\n      WHERE s2.org_id = s.org_id\n        AND s2.id <> s.id\n        AND s2.started_at < (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n        AND (s2.canceled_at IS NULL OR s2.canceled_at >= (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text)\n    )\n  GROUP BY s.org_id\n),\nweeks AS (\n  SELECT generate_series(\n           date_trunc('week', (:date_range_start::date)::timestamp),\n           ((:date_range_end::date) - 1)::timestamp,\n           interval '1 week'\n         )::date AS week_start\n)\nSELECT w.week_start AS x, count(c.org_id)::int AS y\nFROM weeks w\nLEFT JOIN churned c ON c.week_start = w.week_start\nGROUP BY w.week_start\nORDER BY w.week_start",
+      "signature": "LQI6OCZKI2aXgaVcMI0P2yXNvWE3mYEcszYwqPic4OA"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "warn",
+      "label": "Reviewed 3 queries: 3 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "churned_by_week",
+      "result": {
+        "columns": [
+          {
+            "name": "x",
+            "type": "date"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "2026-06-29",
+            0
+          ],
+          [
+            "2026-07-06",
+            3
+          ],
+          [
+            "2026-07-13",
+            6
+          ],
+          [
+            "2026-07-20",
+            5
+          ],
+          [
+            "2026-07-27",
+            3
+          ],
+          [
+            "2026-08-03",
+            4
+          ],
+          [
+            "2026-08-10",
+            1
+          ],
+          [
+            "2026-08-17",
+            2
+          ],
+          [
+            "2026-08-24",
+            2
+          ],
+          [
+            "2026-08-31",
+            1
+          ],
+          [
+            "2026-09-07",
+            0
+          ],
+          [
+            "2026-09-14",
+            1
+          ],
+          [
+            "2026-09-21",
+            2
+          ],
+          [
+            "2026-09-28",
+            1
+          ]
+        ],
+        "row_count": 14,
+        "truncated": false,
+        "runtime_ms": 119,
+        "executed_at": "2026-10-28T18:09:15.957Z",
+        "plan_cost": 70,
+        "params": {
+          "timezone": "UTC",
+          "date_range_start": "2026-07-01",
+          "date_range_end": "2026-10-01",
+          "churn_reason_only": true,
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "done",
+      "label": "Ran 3 queries in 122 ms"
+    },
+    {
+      "type": "run.done",
+      "usage": {
+        "input_tokens": 35675,
+        "output_tokens": 9191,
+        "cache_read_input_tokens": 3519,
+        "cost_usd": 0.24380647500000002
+      },
+      "elapsed_ms": 38020
+    }
+  ]
+}

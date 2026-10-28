@@ -1,0 +1,566 @@
+{
+  "latency_ms": 29782,
+  "events": [
+    {
+      "type": "run.start",
+      "run_id": "d6b589ec-9044-4e26-a03a-23dc481ec209",
+      "question": "What is our current MRR?",
+      "as_of": "2026-10-28",
+      "mode": "live"
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "running",
+      "label": "Reading the schema",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "intent",
+      "intent": {
+        "status": "Found subscriptions and organizations",
+        "category": "revenue",
+        "tables": [
+          "subscriptions",
+          "organizations"
+        ],
+        "answerable": true,
+        "reason_if_unanswerable": null
+      }
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "done",
+      "label": "Found subscriptions and organizations",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Current MRR”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “MRR over time”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “MRR by plan tier”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Exclude test accounts”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Count trials”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Count past-due”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Trend period”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Timezone”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "plan",
+      "plan": {
+        "status": "Planning MRR dashboard",
+        "headline": "Current MRR is the sum of monthly recurring revenue across live, paying subscriptions as of today, with trend and plan breakdown.",
+        "metrics": [
+          {
+            "id": "current_mrr",
+            "title": "Current MRR",
+            "description": "Sum of mrr_cents (shown in USD) across subscriptions that are live as of the as-of date: started on or before that date and not yet canceled. Test organizations are excluded if the assumption is on.",
+            "chart": "kpi",
+            "unit": "usd",
+            "assumptions": [
+              "exclude_test_accounts",
+              "include_trialing",
+              "include_past_due",
+              "timezone"
+            ]
+          },
+          {
+            "id": "mrr_trend",
+            "title": "MRR over time",
+            "description": "Month-end MRR for each month in the selected period, computed by summing mrr_cents of subscriptions live at the end of each month (started before it and not canceled before it).",
+            "chart": "line",
+            "unit": "usd",
+            "assumptions": [
+              "date_range",
+              "exclude_test_accounts",
+              "include_trialing",
+              "include_past_due",
+              "timezone"
+            ]
+          },
+          {
+            "id": "mrr_by_plan",
+            "title": "MRR by plan tier",
+            "description": "Current MRR split by plan tier (free, starter, team, business, enterprise). Subscriptions with no plan are grouped as Unknown.",
+            "chart": "bar",
+            "unit": "usd",
+            "assumptions": [
+              "exclude_test_accounts",
+              "include_trialing",
+              "include_past_due",
+              "timezone"
+            ]
+          }
+        ],
+        "assumptions": [
+          {
+            "key": "exclude_test_accounts",
+            "label": "Exclude test accounts",
+            "rationale": "The data dictionary says test organizations (QA, demo, load-test) should be excluded from business metrics.",
+            "type": "bool",
+            "value": true
+          },
+          {
+            "key": "include_trialing",
+            "label": "Count trials",
+            "rationale": "Trialing subscriptions usually have not paid yet, so they are excluded from MRR by default.",
+            "type": "bool",
+            "value": false
+          },
+          {
+            "key": "include_past_due",
+            "label": "Count past-due",
+            "rationale": "Past-due customers are still subscribed and expected to pay, so they count toward MRR by default.",
+            "type": "bool",
+            "value": true
+          },
+          {
+            "key": "date_range",
+            "label": "Trend period",
+            "rationale": "Twelve months covers the full data history and shows the MRR trajectory without being noisy.",
+            "type": "date_range",
+            "value": {
+              "preset": "last_12_months"
+            }
+          },
+          {
+            "key": "timezone",
+            "label": "Timezone",
+            "rationale": "Determines which instant counts as the as-of date and month-end boundaries; UTC is a neutral default.",
+            "type": "timezone",
+            "value": "UTC"
+          }
+        ]
+      }
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "done",
+      "label": "Planning MRR dashboard",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "current_mrr",
+      "sql": "WITH params AS (SELECT ((:as_of::date) + 1)::timestamp AT TIME ZONE :timezone::text AS as_of_end) SELECT ROUND(COALESCE(SUM(s.mrr_cents), 0) / 100.0, 2) AS value FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id CROSS JOIN params p WHERE s.started_at < p.as_of_end AND (s.canceled_at IS NULL OR s.canceled_at >= p.as_of_end) AND s.status <> 'canceled' AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test) AND (:include_trialing::boolean OR s.status <> 'trialing') AND (:include_past_due::boolean OR s.status <> 'past_due')",
+      "explanation": "Sums mrr_cents/100 for subscriptions started by the end of the as-of date (in the chosen timezone) and not canceled, honoring the test-account, trialing and past-due toggles.",
+      "params": [
+        "as_of",
+        "timezone",
+        "exclude_test_accounts",
+        "include_trialing",
+        "include_past_due"
+      ],
+      "signature": "jAaPhYW6BaIQkAo2KuETSdlbvY6wRqidrM1-wwu0zis"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "1 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "mrr_by_plan",
+      "sql": "WITH asof AS (SELECT ((:as_of::date) + 1)::timestamp AT TIME ZONE :timezone::text AS cutoff), live_subs AS (SELECT s.plan_id, s.mrr_cents FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id CROSS JOIN asof a WHERE s.started_at < a.cutoff AND (s.canceled_at IS NULL OR s.canceled_at >= a.cutoff) AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (s.status = 'active' OR (s.status = 'past_due' AND :include_past_due::boolean) OR (s.status = 'trialing' AND :include_trialing::boolean))) SELECT COALESCE(p.tier, 'Unknown') AS label, round(SUM(l.mrr_cents) / 100.0, 2) AS value FROM live_subs l LEFT JOIN northwind.plans p ON p.id = l.plan_id GROUP BY COALESCE(p.tier, 'Unknown') ORDER BY value DESC LIMIT 20",
+      "explanation": "Sums mrr_cents of subscriptions live at the end of the as-of date (started by then, not canceled), filtered by status toggles and test-account setting, grouped by plan tier with Unknown for missing plans.",
+      "params": [
+        "as_of",
+        "timezone",
+        "exclude_test_accounts",
+        "include_past_due",
+        "include_trialing"
+      ],
+      "signature": "OUoCyzK6_RsNTMMMx4yh-3-RHZe72dqpn8_rjxtlJfo"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "2 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "mrr_trend",
+      "sql": "WITH months AS (SELECT generate_series(date_trunc('month', :date_range_start::date), date_trunc('month', (:date_range_end::date - 1)), interval '1 month')::date AS month_start), month_ends AS (SELECT month_start, LEAST(((month_start + interval '1 month')::date), :as_of::date + 1) AS boundary_date FROM months), subs AS (SELECT s.started_at, s.canceled_at, s.mrr_cents FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (s.status <> 'trialing' OR :include_trialing::boolean) AND (s.status <> 'past_due' OR :include_past_due::boolean)) SELECT m.boundary_date - 1 AS x, ROUND(COALESCE(SUM(s.mrr_cents), 0) / 100.0, 2) AS y FROM month_ends m LEFT JOIN subs s ON s.started_at < (m.boundary_date::timestamp AT TIME ZONE :timezone::text) AND (s.canceled_at IS NULL OR s.canceled_at >= (m.boundary_date::timestamp AT TIME ZONE :timezone::text)) GROUP BY m.boundary_date ORDER BY x",
+      "explanation": "For each month in the range, sums mrr_cents of subscriptions started before the end of that month (or the as-of date for the current month) and not canceled by then, honoring test, trial and past-due toggles and the timezone.",
+      "params": [
+        "date_range_start",
+        "date_range_end",
+        "as_of",
+        "exclude_test_accounts",
+        "include_trialing",
+        "include_past_due",
+        "timezone"
+      ],
+      "signature": "bQbvNHAMg_35OCDVaUZG2m7UoxBcrtBVAetiNJ0IS-0"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "done",
+      "label": "Wrote 3 queries",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "Checking edge cases in the join logic — the one-to-one subscription-to-organization relationship avoids fan…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I realize the status filter applies current subscription status retroactively to past months, which introdu…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "current_mrr",
+        "verdict": "pass",
+        "summary": "The query correctly sums mrr_cents for live, non-canceled subscriptions as of the end of the as-of day in the chosen timezone, honoring the test-account, trialing and past-due assumptions without join fanout.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "WITH params AS (SELECT ((:as_of::date) + 1)::timestamp AT TIME ZONE :timezone::text AS as_of_end) SELECT ROUND(COALESCE(SUM(s.mrr_cents), 0) / 100.0, 2) AS value FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id CROSS JOIN params p WHERE s.started_at < p.as_of_end AND (s.canceled_at IS NULL OR s.canceled_at >= p.as_of_end) AND s.status <> 'canceled' AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test) AND (:include_trialing::boolean OR s.status <> 'trialing') AND (:include_past_due::boolean OR s.status <> 'past_due')",
+      "signature": "jAaPhYW6BaIQkAo2KuETSdlbvY6wRqidrM1-wwu0zis"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "1 of 3 reviewed",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "running",
+      "label": "Running queries read-only"
+    },
+    {
+      "type": "result",
+      "metric_id": "current_mrr",
+      "result": {
+        "columns": [
+          {
+            "name": "value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            54396
+          ]
+        ],
+        "row_count": 1,
+        "truncated": false,
+        "runtime_ms": 114,
+        "executed_at": "2026-10-28T18:09:55.158Z",
+        "plan_cost": 39,
+        "params": {
+          "as_of": "2026-10-28",
+          "timezone": "UTC",
+          "exclude_test_accounts": true,
+          "include_trialing": false,
+          "include_past_due": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "mrr_by_plan",
+        "verdict": "pass",
+        "summary": "This query correctly sums current MRR by plan tier, counting live active and past-due subscriptions as of today, excluding trials and test organizations, and grouping missing plans as Unknown.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "WITH asof AS (SELECT ((:as_of::date) + 1)::timestamp AT TIME ZONE :timezone::text AS cutoff), live_subs AS (SELECT s.plan_id, s.mrr_cents FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id CROSS JOIN asof a WHERE s.started_at < a.cutoff AND (s.canceled_at IS NULL OR s.canceled_at >= a.cutoff) AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (s.status = 'active' OR (s.status = 'past_due' AND :include_past_due::boolean) OR (s.status = 'trialing' AND :include_trialing::boolean))) SELECT COALESCE(p.tier, 'Unknown') AS label, round(SUM(l.mrr_cents) / 100.0, 2) AS value FROM live_subs l LEFT JOIN northwind.plans p ON p.id = l.plan_id GROUP BY COALESCE(p.tier, 'Unknown') ORDER BY value DESC LIMIT 20",
+      "signature": "OUoCyzK6_RsNTMMMx4yh-3-RHZe72dqpn8_rjxtlJfo"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "2 of 3 reviewed",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "mrr_by_plan",
+      "result": {
+        "columns": [
+          {
+            "name": "label",
+            "type": "text"
+          },
+          {
+            "name": "value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "enterprise",
+            28971
+          ],
+          [
+            "business",
+            15847
+          ],
+          [
+            "team",
+            5992
+          ],
+          [
+            "starter",
+            2581
+          ],
+          [
+            "Unknown",
+            1005
+          ],
+          [
+            "free",
+            0
+          ]
+        ],
+        "row_count": 6,
+        "truncated": false,
+        "runtime_ms": 118,
+        "executed_at": "2026-10-28T18:09:57.078Z",
+        "plan_cost": 55,
+        "params": {
+          "as_of": "2026-10-28",
+          "timezone": "UTC",
+          "exclude_test_accounts": true,
+          "include_past_due": true,
+          "include_trialing": false
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "mrr_trend",
+        "verdict": "warn",
+        "summary": "The month-end MRR trend is roughly right, but trial and past-due exclusions use each subscription's current status, so historical months may include trials that were later canceled or exclude subscriptions that were paying then.",
+        "issues": [
+          {
+            "code": "question_mismatch",
+            "severity": "warn",
+            "message": "Filters on s.status reflect today's status, not the status at each month-end. Trials that were later canceled have status='canceled' and are counted as paying MRR in past months, while subs that are trialing or past_due today are dropped from every past month. Label the chart as approximate, or use invoices (e.g. a paid invoice before the boundary) to approximate paying status."
+          },
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "The date_range_start of 2025-10-29 truncates to October 2025, so the first point is 2025-10-31. Data starts 2025-11-01, so that point will likely show near-zero and look like a false ramp-up. Consider starting months at date_trunc('month', :date_range_start) only once data exists."
+          },
+          {
+            "code": "timezone",
+            "severity": "warn",
+            "message": "date_trunc('month', <date>) resolves to the timestamptz overload, so the month series depends on the session timezone. Cast to ::timestamp first to keep month boundaries purely calendar-based before applying AT TIME ZONE :timezone."
+          }
+        ],
+        "rewritten_sql": "WITH months AS (SELECT generate_series(date_trunc('month', (:date_range_start::date)::timestamp), date_trunc('month', ((:date_range_end::date - 1))::timestamp), interval '1 month')::date AS month_start), month_ends AS (SELECT month_start, LEAST(((month_start + interval '1 month')::date), :as_of::date + 1) AS boundary_date FROM months), subs AS (SELECT s.started_at, s.canceled_at, s.mrr_cents FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (s.status <> 'trialing' OR :include_trialing::boolean) AND (s.status <> 'past_due' OR :include_past_due::boolean)) SELECT m.boundary_date - 1 AS x, ROUND(COALESCE(SUM(s.mrr_cents), 0) / 100.0, 2) AS y FROM month_ends m LEFT JOIN subs s ON s.started_at < (m.boundary_date::timestamp AT TIME ZONE :timezone::text) AND (s.canceled_at IS NULL OR s.canceled_at >= (m.boundary_date::timestamp AT TIME ZONE :timezone::text)) GROUP BY m.boundary_date ORDER BY x"
+      },
+      "final_sql": "WITH months AS (SELECT generate_series(date_trunc('month', (:date_range_start::date)::timestamp), date_trunc('month', ((:date_range_end::date - 1))::timestamp), interval '1 month')::date AS month_start), month_ends AS (SELECT month_start, LEAST(((month_start + interval '1 month')::date), :as_of::date + 1) AS boundary_date FROM months), subs AS (SELECT s.started_at, s.canceled_at, s.mrr_cents FROM northwind.subscriptions s JOIN northwind.organizations o ON o.id = s.org_id WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (s.status <> 'trialing' OR :include_trialing::boolean) AND (s.status <> 'past_due' OR :include_past_due::boolean)) SELECT m.boundary_date - 1 AS x, ROUND(COALESCE(SUM(s.mrr_cents), 0) / 100.0, 2) AS y FROM month_ends m LEFT JOIN subs s ON s.started_at < (m.boundary_date::timestamp AT TIME ZONE :timezone::text) AND (s.canceled_at IS NULL OR s.canceled_at >= (m.boundary_date::timestamp AT TIME ZONE :timezone::text)) GROUP BY m.boundary_date ORDER BY x",
+      "signature": "1beEyQtkUsyNVgq82fVCSTxp_rFhs1FgFhNHRluvXss"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "warn",
+      "label": "Reviewed 3 queries: 1 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "mrr_trend",
+      "result": {
+        "columns": [
+          {
+            "name": "x",
+            "type": "date"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "2025-10-31",
+            24209
+          ],
+          [
+            "2025-11-30",
+            27870
+          ],
+          [
+            "2025-12-31",
+            28539
+          ],
+          [
+            "2026-01-31",
+            29991
+          ],
+          [
+            "2026-02-28",
+            30539
+          ],
+          [
+            "2026-03-31",
+            33565
+          ],
+          [
+            "2026-04-30",
+            40904
+          ],
+          [
+            "2026-05-31",
+            45434
+          ],
+          [
+            "2026-06-30",
+            46737
+          ],
+          [
+            "2026-07-31",
+            47446
+          ],
+          [
+            "2026-08-31",
+            49223
+          ],
+          [
+            "2026-09-30",
+            53120
+          ],
+          [
+            "2026-10-28",
+            54396
+          ]
+        ],
+        "row_count": 13,
+        "truncated": false,
+        "runtime_ms": 122,
+        "executed_at": "2026-10-28T18:10:09.177Z",
+        "plan_cost": 29916,
+        "params": {
+          "date_range_start": "2025-10-29",
+          "date_range_end": "2026-10-29",
+          "as_of": "2026-10-28",
+          "exclude_test_accounts": true,
+          "include_trialing": false,
+          "include_past_due": true,
+          "timezone": "UTC"
+        }
+      }
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "done",
+      "label": "Ran 3 queries in 122 ms"
+    },
+    {
+      "type": "run.done",
+      "usage": {
+        "input_tokens": 35125,
+        "output_tokens": 4956,
+        "cache_read_input_tokens": 26005,
+        "cost_usd": 0.10820761
+      },
+      "elapsed_ms": 29782
+    }
+  ]
+}

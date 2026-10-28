@@ -1,0 +1,475 @@
+{
+  "latency_ms": 15491,
+  "events": [
+    {
+      "type": "run.start",
+      "run_id": "4443e792-59c4-4170-86d6-274cdebb3a2d",
+      "question": "What share of support tickets opened in October 2026 are still unresolved?",
+      "as_of": "2026-10-28",
+      "mode": "live"
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "running",
+      "label": "Reading the schema",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "intent",
+      "intent": {
+        "status": "Found support tickets for October 2026",
+        "category": "support",
+        "tables": [
+          "support_tickets"
+        ],
+        "answerable": true,
+        "reason_if_unanswerable": null
+      }
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "done",
+      "label": "Found support tickets for October 2026",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Unresolved ticket share”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Unresolved share by category”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Unresolved share by creation week”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Ticket open period”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Reporting timezone”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Exclude test accounts”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "plan",
+      "plan": {
+        "status": "Found support tickets for October 2026",
+        "headline": "Share of tickets created in October 2026 that have no resolution date as of today, with a daily-created trend and a breakdown by category.",
+        "metrics": [
+          {
+            "id": "unresolved_share",
+            "title": "Unresolved ticket share",
+            "description": "Tickets created in the selected period with no resolved_at, divided by all tickets created in that period. Tickets from test organizations are excluded when that assumption is on.",
+            "chart": "kpi",
+            "unit": "percent",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "exclude_test_accounts"
+            ]
+          },
+          {
+            "id": "unresolved_by_category",
+            "title": "Unresolved share by category",
+            "description": "For each ticket category, the share of tickets created in the selected period that are still unresolved, so you can see where the backlog is concentrated.",
+            "chart": "bar",
+            "unit": "percent",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "exclude_test_accounts"
+            ]
+          },
+          {
+            "id": "unresolved_by_week",
+            "title": "Unresolved share by creation week",
+            "description": "For each week in the selected period, the share of tickets created that week that are still unresolved today. Older weeks should be mostly resolved, so high values there signal stuck tickets.",
+            "chart": "line",
+            "unit": "percent",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "exclude_test_accounts"
+            ]
+          }
+        ],
+        "assumptions": [
+          {
+            "key": "date_range",
+            "label": "Ticket open period",
+            "rationale": "The question asks about tickets opened in October 2026, so the period is set to that calendar month, inclusive of Oct 1 through Oct 31.",
+            "type": "date_range",
+            "value": {
+              "preset": "custom",
+              "start": "2026-10-01",
+              "end": "2026-10-31"
+            }
+          },
+          {
+            "key": "timezone",
+            "label": "Reporting timezone",
+            "rationale": "Ticket creation dates are bucketed in this timezone, so tickets near month boundaries fall into the right month. UTC is used because no company timezone is specified.",
+            "type": "timezone",
+            "value": "UTC"
+          },
+          {
+            "key": "exclude_test_accounts",
+            "label": "Exclude test accounts",
+            "rationale": "The data dictionary says test, QA, demo and load-test tenants should be excluded from business metrics.",
+            "type": "bool",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "done",
+      "label": "Found support tickets for October 2026",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "unresolved_share",
+      "sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE t.resolved_at IS NULL) / NULLIF(COUNT(*), 0), 1) AS value FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)",
+      "explanation": "Among tickets created in the selected period (in the chosen timezone, excluding test orgs if enabled), the percent with resolved_at NULL.",
+      "params": [
+        "date_range_start",
+        "timezone",
+        "date_range_end",
+        "exclude_test_accounts"
+      ],
+      "signature": "zL9elV11fTv6mFqF8GHmiZkd_k7iW1E915yVuH5Fv2s"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "1 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "unresolved_by_week",
+      "sql": "WITH tickets AS (\n  SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text) AS week_start,\n         t.resolved_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE t.created_at >= (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text\n    AND t.created_at < (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n)\nSELECT (week_start)::date AS x,\n       round(100.0 * count(*) FILTER (WHERE resolved_at IS NULL) / count(*), 1) AS y\nFROM tickets\nGROUP BY week_start\nORDER BY x",
+      "explanation": "Buckets tickets created in the period (in the chosen timezone, test orgs optionally excluded) by week and computes the percent with no resolved_at.",
+      "params": [
+        "timezone",
+        "date_range_start",
+        "date_range_end",
+        "exclude_test_accounts"
+      ],
+      "signature": "64YYifl7FRFYrH4oeK6Q9GNWx9XnAhCU5eUu859_ZqY"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "2 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "unresolved_by_category",
+      "sql": "WITH tickets AS (SELECT t.category, t.resolved_at FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)) SELECT category AS label, round(100.0 * count(*) FILTER (WHERE resolved_at IS NULL) / count(*), 1) AS value FROM tickets GROUP BY category ORDER BY value DESC, label LIMIT 20",
+      "explanation": "For tickets created in the selected period (in the chosen timezone, optionally excluding test orgs), computes per category the percent with NULL resolved_at.",
+      "params": [
+        "date_range_start",
+        "timezone",
+        "date_range_end",
+        "exclude_test_accounts"
+      ],
+      "signature": "BTw5xlzBstkCFFiRp16csWUuKyDmFqLHI7OaZ1zxcX8"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "done",
+      "label": "Wrote 3 queries",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm double-checking the query logic: the join handles org_id correctly, date ranges and timezone look right…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "The previous_value comparison for September isn't very meaningful given resolution patterns over time, so l…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "unresolved_share",
+        "verdict": "pass",
+        "summary": "The query correctly computes the percentage of non-test-organization tickets created in October 2026 (UTC) that have no resolution date, with correct date boundaries and no join duplication.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE t.resolved_at IS NULL) / NULLIF(COUNT(*), 0), 1) AS value FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)",
+      "signature": "zL9elV11fTv6mFqF8GHmiZkd_k7iW1E915yVuH5Fv2s"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "1 of 3 reviewed",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "running",
+      "label": "Running queries read-only"
+    },
+    {
+      "type": "result",
+      "metric_id": "unresolved_share",
+      "result": {
+        "columns": [
+          {
+            "name": "value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            11.4
+          ]
+        ],
+        "row_count": 1,
+        "truncated": false,
+        "runtime_ms": 116,
+        "executed_at": "2026-10-28T18:10:24.193Z",
+        "plan_cost": 25,
+        "params": {
+          "date_range_start": "2026-10-01",
+          "timezone": "UTC",
+          "date_range_end": "2026-11-01",
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "unresolved_by_category",
+        "verdict": "pass",
+        "summary": "The query correctly computes, for each ticket category, the share of October 2026 tickets (UTC, test organizations excluded) that have no resolved_at, so it can be shown as written.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "WITH tickets AS (SELECT t.category, t.resolved_at FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE t.created_at >= (:date_range_start::date)::timestamp at time zone :timezone::text AND t.created_at < (:date_range_end::date)::timestamp at time zone :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)) SELECT category AS label, round(100.0 * count(*) FILTER (WHERE resolved_at IS NULL) / count(*), 1) AS value FROM tickets GROUP BY category ORDER BY value DESC, label LIMIT 20",
+      "signature": "BTw5xlzBstkCFFiRp16csWUuKyDmFqLHI7OaZ1zxcX8"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "2 of 3 reviewed",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "unresolved_by_category",
+      "result": {
+        "columns": [
+          {
+            "name": "label",
+            "type": "text"
+          },
+          {
+            "name": "value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "integrations",
+            20
+          ],
+          [
+            "performance",
+            17.4
+          ],
+          [
+            "account",
+            12.9
+          ],
+          [
+            "billing",
+            11.1
+          ],
+          [
+            "feature_request",
+            6.7
+          ],
+          [
+            "bug",
+            0
+          ]
+        ],
+        "row_count": 6,
+        "truncated": false,
+        "runtime_ms": 113,
+        "executed_at": "2026-10-28T18:10:26.448Z",
+        "plan_cost": 26,
+        "params": {
+          "date_range_start": "2026-10-01",
+          "timezone": "UTC",
+          "date_range_end": "2026-11-01",
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "unresolved_by_week",
+        "verdict": "pass",
+        "summary": "The weekly unresolved share is computed correctly: October tickets are filtered in the chosen timezone, test organizations are excluded, there is no join fan-out, and each week's tickets with no resolved_at are divided by that week's total.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "WITH tickets AS (\n  SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text) AS week_start,\n         t.resolved_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE t.created_at >= (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text\n    AND t.created_at < (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text\n    AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n)\nSELECT (week_start)::date AS x,\n       round(100.0 * count(*) FILTER (WHERE resolved_at IS NULL) / count(*), 1) AS y\nFROM tickets\nGROUP BY week_start\nORDER BY x",
+      "signature": "64YYifl7FRFYrH4oeK6Q9GNWx9XnAhCU5eUu859_ZqY"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "done",
+      "label": "Reviewed 3 queries: all pass",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "unresolved_by_week",
+      "result": {
+        "columns": [
+          {
+            "name": "x",
+            "type": "date"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "2026-09-28",
+            6.7
+          ],
+          [
+            "2026-10-05",
+            2.7
+          ],
+          [
+            "2026-10-12",
+            4.8
+          ],
+          [
+            "2026-10-19",
+            9.1
+          ],
+          [
+            "2026-10-26",
+            55.6
+          ]
+        ],
+        "row_count": 5,
+        "truncated": false,
+        "runtime_ms": 117,
+        "executed_at": "2026-10-28T18:10:27.036Z",
+        "plan_cost": 41,
+        "params": {
+          "timezone": "UTC",
+          "date_range_start": "2026-10-01",
+          "date_range_end": "2026-11-01",
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "done",
+      "label": "Ran 3 queries in 117 ms"
+    },
+    {
+      "type": "run.done",
+      "usage": {
+        "input_tokens": 34112,
+        "output_tokens": 2689,
+        "cache_read_input_tokens": 26005,
+        "cost_usd": 0.06508601
+      },
+      "elapsed_ms": 15491
+    }
+  ]
+}

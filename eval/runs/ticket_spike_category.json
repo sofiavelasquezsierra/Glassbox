@@ -1,0 +1,1388 @@
+{
+  "latency_ms": 23395,
+  "events": [
+    {
+      "type": "run.start",
+      "run_id": "0044ee19-5ff9-4c75-9f9c-26e549868a30",
+      "question": "Which support ticket category spiked in the week of August 10, 2026?",
+      "as_of": "2026-10-28",
+      "mode": "live"
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "running",
+      "label": "Reading the schema",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "intent",
+      "intent": {
+        "status": "Routing support ticket spike question to support_tickets",
+        "category": "support",
+        "tables": [
+          "support_tickets"
+        ],
+        "answerable": true,
+        "reason_if_unanswerable": null
+      }
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "done",
+      "label": "Routing support ticket spike question to support_tickets",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Tickets by category in spike week”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Spike vs baseline”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Weekly tickets by category”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Spike week start”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Trend period”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Baseline weeks”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Timezone”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Exclude test orgs”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "plan",
+      "plan": {
+        "status": "Planning support ticket spike analysis",
+        "headline": "Compare ticket volume by category in the week of Aug 10, 2026 against the prior weeks to find which category spiked.",
+        "metrics": [
+          {
+            "id": "spike_week_by_category",
+            "title": "Tickets by category in spike week",
+            "description": "Number of support tickets created in the selected spike week, grouped by category, shown next to the baseline weekly average for the same category so the spike is visible.",
+            "chart": "bar",
+            "unit": "count",
+            "assumptions": [
+              "spike_week_start",
+              "timezone",
+              "exclude_test_accounts",
+              "baseline_weeks"
+            ]
+          },
+          {
+            "id": "spike_ratio_by_category",
+            "title": "Spike vs baseline",
+            "description": "For each category, tickets in the spike week divided by the average weekly tickets over the baseline weeks before it. A ratio well above 1 means the category spiked.",
+            "chart": "table",
+            "unit": "ratio",
+            "assumptions": [
+              "spike_week_start",
+              "baseline_weeks",
+              "timezone",
+              "exclude_test_accounts"
+            ]
+          },
+          {
+            "id": "weekly_tickets_trend",
+            "title": "Weekly tickets by category",
+            "description": "Weekly count of tickets created per category over the trend period, to show the spike in context.",
+            "chart": "line",
+            "unit": "count",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "exclude_test_accounts"
+            ]
+          }
+        ],
+        "assumptions": [
+          {
+            "key": "spike_week_start",
+            "label": "Spike week start",
+            "rationale": "The week of August 10, 2026 starts on Monday, Aug 10, and runs through Sunday, Aug 16.",
+            "type": "date_range",
+            "value": {
+              "preset": "custom",
+              "start": "2026-08-10",
+              "end": "2026-08-16"
+            }
+          },
+          {
+            "key": "date_range",
+            "label": "Trend period",
+            "rationale": "Roughly 6 months of weekly data gives context before and after the spike week.",
+            "type": "date_range",
+            "value": {
+              "preset": "last_6_months"
+            }
+          },
+          {
+            "key": "baseline_weeks",
+            "label": "Baseline weeks",
+            "rationale": "Number of weeks before the spike week averaged as the normal level for comparison.",
+            "type": "int",
+            "value": 8,
+            "min": 2,
+            "max": 26,
+            "unit": "weeks"
+          },
+          {
+            "key": "timezone",
+            "label": "Timezone",
+            "rationale": "Ticket timestamps are stored in UTC, so weeks are bucketed in a single chosen timezone.",
+            "type": "timezone",
+            "value": "UTC"
+          },
+          {
+            "key": "exclude_test_accounts",
+            "label": "Exclude test orgs",
+            "rationale": "Test, QA and demo tenants are not real customers and would distort ticket counts.",
+            "type": "bool",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "done",
+      "label": "Planning support ticket spike analysis",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "I'm working out the spike_ratio_by_category query parameters, using the custom date range of August 10-16, …",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "weekly_tickets_trend",
+      "sql": "WITH tix AS (SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text)::date AS wk, t.category FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id WHERE t.created_at >= (:date_range_start::date)::timestamp AT TIME ZONE :timezone::text AND t.created_at < (:date_range_end::date)::timestamp AT TIME ZONE :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)) SELECT wk AS x, COUNT(*)::numeric AS y, category AS series FROM tix GROUP BY wk, category ORDER BY wk, category",
+      "explanation": "Counts support tickets per ISO week (Monday start) and category in the trend date range, bucketed in the chosen timezone, excluding test orgs when enabled.",
+      "params": [
+        "timezone",
+        "date_range_start",
+        "date_range_end",
+        "exclude_test_accounts"
+      ],
+      "signature": "ggkIeld-NbN5j54EvB5SI_eiBWufP8UZ0Hyn3QY-wlA"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "1 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm verifying the query's join logic and timezone handling look correct, and noting that the six-month wind…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "spike_week_by_category",
+      "sql": "WITH bounds AS (\n  SELECT\n    (:spike_week_start_start::date)::timestamp AT TIME ZONE :timezone::text AS spike_start,\n    (:spike_week_start_end::date)::timestamp AT TIME ZONE :timezone::text AS spike_end,\n    ((:spike_week_start_start::date)::timestamp - make_interval(days => :baseline_weeks::int * 7)) AT TIME ZONE :timezone::text AS base_start\n),\ntickets AS (\n  SELECT t.category, t.created_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (:exclude_test_accounts::boolean = false OR o.is_test = false)\n),\nagg AS (\n  SELECT\n    t.category,\n    count(*) FILTER (WHERE t.created_at >= b.spike_start AND t.created_at < b.spike_end) AS spike_count,\n    count(*) FILTER (WHERE t.created_at >= b.base_start AND t.created_at < b.spike_start) AS baseline_count\n  FROM tickets t\n  CROSS JOIN bounds b\n  WHERE t.created_at >= b.base_start AND t.created_at < b.spike_end\n  GROUP BY t.category\n)\nSELECT\n  category AS label,\n  spike_count AS value,\n  round(baseline_count::numeric / :baseline_weeks::int, 1) AS baseline_weekly_avg\nFROM agg\nORDER BY value DESC, label\nLIMIT 20",
+      "explanation": "Counts tickets per category created in the spike week (timezone-adjusted, test orgs optionally excluded) alongside the average weekly count over the preceding baseline weeks.",
+      "params": [
+        "spike_week_start_start",
+        "timezone",
+        "spike_week_start_end",
+        "baseline_weeks",
+        "exclude_test_accounts"
+      ],
+      "signature": "7cc1lB0euaFGJmLqoIn5bY0Lla4hQj0tw9dikVo84So"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "2 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "spike_ratio_by_category",
+      "sql": "WITH bounds AS (\n  SELECT\n    (:spike_week_start_start::date)::timestamp AT TIME ZONE :timezone::text AS spike_start,\n    (:spike_week_start_end::date)::timestamp AT TIME ZONE :timezone::text AS spike_end,\n    ((:spike_week_start_start::date) - (:baseline_weeks::int * 7))::timestamp AT TIME ZONE :timezone::text AS base_start\n),\ntickets AS (\n  SELECT t.category, t.created_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n),\nper_category AS (\n  SELECT\n    t.category,\n    count(*) FILTER (WHERE t.created_at >= b.spike_start AND t.created_at < b.spike_end) AS spike_tickets,\n    count(*) FILTER (WHERE t.created_at >= b.base_start AND t.created_at < b.spike_start) AS baseline_tickets\n  FROM tickets t\n  CROSS JOIN bounds b\n  GROUP BY t.category\n)\nSELECT\n  category,\n  spike_tickets,\n  round(baseline_tickets::numeric / :baseline_weeks::int, 1) AS baseline_weekly_avg,\n  round(spike_tickets::numeric / NULLIF(baseline_tickets::numeric / :baseline_weeks::int, 0), 2) AS spike_ratio\nFROM per_category\nORDER BY spike_ratio DESC NULLS LAST, spike_tickets DESC",
+      "explanation": "Counts tickets per category in the spike week and over the preceding baseline_weeks weeks (timezone-aware, test orgs optionally excluded), then divides spike count by the baseline weekly average.",
+      "params": [
+        "spike_week_start_start",
+        "timezone",
+        "spike_week_start_end",
+        "baseline_weeks",
+        "exclude_test_accounts"
+      ],
+      "signature": "zzrPcUdP1TUFZ3rQ9O-XzS6qtWiprFKE3xF-SawL-6s"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "done",
+      "label": "Wrote 3 queries",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "Double-checking the query logic: the join between tickets and orgs is a clean many-to-one on a non-null for…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm verifying the query's join logic and timezone handling look correct, and noting that the six-month wind…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "Working out the exact boundary math so weeks start on Monday and exclude trailing partial weeks confirms th…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I could also zero-fill missing category/week combinations with a generate_series cross join, but I'll keep …",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm verifying the query logic: the org join is one-to-one and non-null, timezone handling looks right, and …",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "The bar chart includes label, value, and an extra baseline average column, which should be fine since the m…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "Now I'm thinking about edge cases—categories that had zero tickets during the spike week but did have activ…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "Categories missing from both periods are a minor omission, but the ordering by value descending looks fine.",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "One thing to double-check: the question asks about \"spiked\" categories, but this metric just shows raw coun…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "spike_week_by_category",
+        "verdict": "pass",
+        "summary": "The query correctly counts non-test tickets per category for Aug 10–16, 2026 in the chosen timezone, alongside an 8-week baseline weekly average, with no fan-out or boundary errors.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "WITH bounds AS (\n  SELECT\n    (:spike_week_start_start::date)::timestamp AT TIME ZONE :timezone::text AS spike_start,\n    (:spike_week_start_end::date)::timestamp AT TIME ZONE :timezone::text AS spike_end,\n    ((:spike_week_start_start::date)::timestamp - make_interval(days => :baseline_weeks::int * 7)) AT TIME ZONE :timezone::text AS base_start\n),\ntickets AS (\n  SELECT t.category, t.created_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (:exclude_test_accounts::boolean = false OR o.is_test = false)\n),\nagg AS (\n  SELECT\n    t.category,\n    count(*) FILTER (WHERE t.created_at >= b.spike_start AND t.created_at < b.spike_end) AS spike_count,\n    count(*) FILTER (WHERE t.created_at >= b.base_start AND t.created_at < b.spike_start) AS baseline_count\n  FROM tickets t\n  CROSS JOIN bounds b\n  WHERE t.created_at >= b.base_start AND t.created_at < b.spike_end\n  GROUP BY t.category\n)\nSELECT\n  category AS label,\n  spike_count AS value,\n  round(baseline_count::numeric / :baseline_weeks::int, 1) AS baseline_weekly_avg\nFROM agg\nORDER BY value DESC, label\nLIMIT 20",
+      "signature": "7cc1lB0euaFGJmLqoIn5bY0Lla4hQj0tw9dikVo84So"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "1 of 3 reviewed",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "running",
+      "label": "Running queries read-only"
+    },
+    {
+      "type": "result",
+      "metric_id": "spike_week_by_category",
+      "result": {
+        "columns": [
+          {
+            "name": "label",
+            "type": "text"
+          },
+          {
+            "name": "value",
+            "type": "number"
+          },
+          {
+            "name": "baseline_weekly_avg",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "integrations",
+            45,
+            8.3
+          ],
+          [
+            "billing",
+            14,
+            8
+          ],
+          [
+            "bug",
+            13,
+            10.3
+          ],
+          [
+            "account",
+            10,
+            5.8
+          ],
+          [
+            "performance",
+            9,
+            5.9
+          ],
+          [
+            "feature_request",
+            8,
+            6.5
+          ]
+        ],
+        "row_count": 6,
+        "truncated": false,
+        "runtime_ms": 117,
+        "executed_at": "2026-10-28T18:09:36.360Z",
+        "plan_cost": 43,
+        "params": {
+          "spike_week_start_start": "2026-08-10",
+          "timezone": "UTC",
+          "spike_week_start_end": "2026-08-17",
+          "baseline_weeks": 8,
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "spike_ratio_by_category",
+        "verdict": "pass",
+        "summary": "The query correctly compares each category's ticket count for Aug 10–16, 2026 (UTC, test orgs excluded) with its average weekly count over the prior 8 weeks, so the spike ratio can be trusted.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "WITH bounds AS (\n  SELECT\n    (:spike_week_start_start::date)::timestamp AT TIME ZONE :timezone::text AS spike_start,\n    (:spike_week_start_end::date)::timestamp AT TIME ZONE :timezone::text AS spike_end,\n    ((:spike_week_start_start::date) - (:baseline_weeks::int * 7))::timestamp AT TIME ZONE :timezone::text AS base_start\n),\ntickets AS (\n  SELECT t.category, t.created_at\n  FROM northwind.support_tickets t\n  JOIN northwind.organizations o ON o.id = t.org_id\n  WHERE (NOT :exclude_test_accounts::boolean OR o.is_test = false)\n),\nper_category AS (\n  SELECT\n    t.category,\n    count(*) FILTER (WHERE t.created_at >= b.spike_start AND t.created_at < b.spike_end) AS spike_tickets,\n    count(*) FILTER (WHERE t.created_at >= b.base_start AND t.created_at < b.spike_start) AS baseline_tickets\n  FROM tickets t\n  CROSS JOIN bounds b\n  GROUP BY t.category\n)\nSELECT\n  category,\n  spike_tickets,\n  round(baseline_tickets::numeric / :baseline_weeks::int, 1) AS baseline_weekly_avg,\n  round(spike_tickets::numeric / NULLIF(baseline_tickets::numeric / :baseline_weeks::int, 0), 2) AS spike_ratio\nFROM per_category\nORDER BY spike_ratio DESC NULLS LAST, spike_tickets DESC",
+      "signature": "zzrPcUdP1TUFZ3rQ9O-XzS6qtWiprFKE3xF-SawL-6s"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "2 of 3 reviewed",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "spike_ratio_by_category",
+      "result": {
+        "columns": [
+          {
+            "name": "category",
+            "type": "text"
+          },
+          {
+            "name": "spike_tickets",
+            "type": "number"
+          },
+          {
+            "name": "baseline_weekly_avg",
+            "type": "number"
+          },
+          {
+            "name": "spike_ratio",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "integrations",
+            45,
+            8.3,
+            5.45
+          ],
+          [
+            "billing",
+            14,
+            8,
+            1.75
+          ],
+          [
+            "account",
+            10,
+            5.8,
+            1.74
+          ],
+          [
+            "performance",
+            9,
+            5.9,
+            1.53
+          ],
+          [
+            "bug",
+            13,
+            10.3,
+            1.27
+          ],
+          [
+            "feature_request",
+            8,
+            6.5,
+            1.23
+          ]
+        ],
+        "row_count": 6,
+        "truncated": false,
+        "runtime_ms": 116,
+        "executed_at": "2026-10-28T18:09:36.834Z",
+        "plan_cost": 99,
+        "params": {
+          "spike_week_start_start": "2026-08-10",
+          "timezone": "UTC",
+          "spike_week_start_end": "2026-08-17",
+          "baseline_weeks": 8,
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "weekly_tickets_trend",
+        "verdict": "warn",
+        "summary": "The weekly trend is counted correctly and excludes test orgs, but the first and last weeks of the range are partial, so they will look like false dips next to the full weeks.",
+        "issues": [
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "date_trunc('week', created_at) buckets include partial weeks: 2026-04-27 has only 5 days, and 2026-10-26 is cut off by the range end and the data end (2026-10-27). Clip the range to whole Monday-start weeks."
+          },
+          {
+            "code": "other",
+            "severity": "warn",
+            "message": "Weeks where a category has zero tickets produce no row, so that series line skips over the gap instead of dropping to 0. Zero-fill with generate_series over weeks × categories if gaps matter."
+          }
+        ],
+        "rewritten_sql": "WITH bounds AS (SELECT date_trunc('week', (:date_range_start::date + 6)::timestamp)::date AS s, date_trunc('week', (:date_range_end::date)::timestamp)::date AS e), tix AS (SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text)::date AS wk, t.category FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id CROSS JOIN bounds b WHERE t.created_at >= (b.s)::timestamp AT TIME ZONE :timezone::text AND t.created_at < (b.e)::timestamp AT TIME ZONE :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)) SELECT wk AS x, COUNT(*)::numeric AS y, category AS series FROM tix GROUP BY wk, category ORDER BY wk, category"
+      },
+      "final_sql": "WITH bounds AS (SELECT date_trunc('week', (:date_range_start::date + 6)::timestamp)::date AS s, date_trunc('week', (:date_range_end::date)::timestamp)::date AS e), tix AS (SELECT date_trunc('week', t.created_at AT TIME ZONE :timezone::text)::date AS wk, t.category FROM northwind.support_tickets t JOIN northwind.organizations o ON o.id = t.org_id CROSS JOIN bounds b WHERE t.created_at >= (b.s)::timestamp AT TIME ZONE :timezone::text AND t.created_at < (b.e)::timestamp AT TIME ZONE :timezone::text AND (NOT :exclude_test_accounts::boolean OR o.is_test = false)) SELECT wk AS x, COUNT(*)::numeric AS y, category AS series FROM tix GROUP BY wk, category ORDER BY wk, category",
+      "signature": "XKDKEcIn06IS3obAMA_n7buM__u3svUZ3bGBiN2GbYo"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "warn",
+      "label": "Reviewed 3 queries: 1 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "weekly_tickets_trend",
+      "result": {
+        "columns": [
+          {
+            "name": "x",
+            "type": "date"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          },
+          {
+            "name": "series",
+            "type": "text"
+          }
+        ],
+        "rows": [
+          [
+            "2026-05-04",
+            7,
+            "account"
+          ],
+          [
+            "2026-05-04",
+            7,
+            "billing"
+          ],
+          [
+            "2026-05-04",
+            13,
+            "bug"
+          ],
+          [
+            "2026-05-04",
+            3,
+            "feature_request"
+          ],
+          [
+            "2026-05-04",
+            5,
+            "integrations"
+          ],
+          [
+            "2026-05-04",
+            5,
+            "performance"
+          ],
+          [
+            "2026-05-11",
+            6,
+            "account"
+          ],
+          [
+            "2026-05-11",
+            16,
+            "billing"
+          ],
+          [
+            "2026-05-11",
+            6,
+            "bug"
+          ],
+          [
+            "2026-05-11",
+            4,
+            "feature_request"
+          ],
+          [
+            "2026-05-11",
+            8,
+            "integrations"
+          ],
+          [
+            "2026-05-11",
+            7,
+            "performance"
+          ],
+          [
+            "2026-05-18",
+            6,
+            "account"
+          ],
+          [
+            "2026-05-18",
+            26,
+            "billing"
+          ],
+          [
+            "2026-05-18",
+            6,
+            "bug"
+          ],
+          [
+            "2026-05-18",
+            7,
+            "feature_request"
+          ],
+          [
+            "2026-05-18",
+            2,
+            "integrations"
+          ],
+          [
+            "2026-05-18",
+            1,
+            "performance"
+          ],
+          [
+            "2026-05-25",
+            5,
+            "account"
+          ],
+          [
+            "2026-05-25",
+            29,
+            "billing"
+          ],
+          [
+            "2026-05-25",
+            8,
+            "bug"
+          ],
+          [
+            "2026-05-25",
+            5,
+            "feature_request"
+          ],
+          [
+            "2026-05-25",
+            2,
+            "integrations"
+          ],
+          [
+            "2026-05-25",
+            4,
+            "performance"
+          ],
+          [
+            "2026-06-01",
+            4,
+            "account"
+          ],
+          [
+            "2026-06-01",
+            22,
+            "billing"
+          ],
+          [
+            "2026-06-01",
+            14,
+            "bug"
+          ],
+          [
+            "2026-06-01",
+            6,
+            "feature_request"
+          ],
+          [
+            "2026-06-01",
+            11,
+            "integrations"
+          ],
+          [
+            "2026-06-01",
+            3,
+            "performance"
+          ],
+          [
+            "2026-06-08",
+            5,
+            "account"
+          ],
+          [
+            "2026-06-08",
+            10,
+            "billing"
+          ],
+          [
+            "2026-06-08",
+            18,
+            "bug"
+          ],
+          [
+            "2026-06-08",
+            2,
+            "feature_request"
+          ],
+          [
+            "2026-06-08",
+            5,
+            "integrations"
+          ],
+          [
+            "2026-06-08",
+            5,
+            "performance"
+          ],
+          [
+            "2026-06-15",
+            7,
+            "account"
+          ],
+          [
+            "2026-06-15",
+            10,
+            "billing"
+          ],
+          [
+            "2026-06-15",
+            12,
+            "bug"
+          ],
+          [
+            "2026-06-15",
+            8,
+            "feature_request"
+          ],
+          [
+            "2026-06-15",
+            12,
+            "integrations"
+          ],
+          [
+            "2026-06-15",
+            11,
+            "performance"
+          ],
+          [
+            "2026-06-22",
+            2,
+            "account"
+          ],
+          [
+            "2026-06-22",
+            11,
+            "billing"
+          ],
+          [
+            "2026-06-22",
+            13,
+            "bug"
+          ],
+          [
+            "2026-06-22",
+            7,
+            "feature_request"
+          ],
+          [
+            "2026-06-22",
+            4,
+            "integrations"
+          ],
+          [
+            "2026-06-22",
+            5,
+            "performance"
+          ],
+          [
+            "2026-06-29",
+            6,
+            "account"
+          ],
+          [
+            "2026-06-29",
+            11,
+            "billing"
+          ],
+          [
+            "2026-06-29",
+            6,
+            "bug"
+          ],
+          [
+            "2026-06-29",
+            7,
+            "feature_request"
+          ],
+          [
+            "2026-06-29",
+            10,
+            "integrations"
+          ],
+          [
+            "2026-06-29",
+            7,
+            "performance"
+          ],
+          [
+            "2026-07-06",
+            5,
+            "account"
+          ],
+          [
+            "2026-07-06",
+            10,
+            "billing"
+          ],
+          [
+            "2026-07-06",
+            5,
+            "bug"
+          ],
+          [
+            "2026-07-06",
+            8,
+            "feature_request"
+          ],
+          [
+            "2026-07-06",
+            11,
+            "integrations"
+          ],
+          [
+            "2026-07-06",
+            6,
+            "performance"
+          ],
+          [
+            "2026-07-13",
+            5,
+            "account"
+          ],
+          [
+            "2026-07-13",
+            4,
+            "billing"
+          ],
+          [
+            "2026-07-13",
+            14,
+            "bug"
+          ],
+          [
+            "2026-07-13",
+            4,
+            "feature_request"
+          ],
+          [
+            "2026-07-13",
+            10,
+            "integrations"
+          ],
+          [
+            "2026-07-13",
+            2,
+            "performance"
+          ],
+          [
+            "2026-07-20",
+            8,
+            "account"
+          ],
+          [
+            "2026-07-20",
+            9,
+            "billing"
+          ],
+          [
+            "2026-07-20",
+            11,
+            "bug"
+          ],
+          [
+            "2026-07-20",
+            2,
+            "feature_request"
+          ],
+          [
+            "2026-07-20",
+            8,
+            "integrations"
+          ],
+          [
+            "2026-07-20",
+            3,
+            "performance"
+          ],
+          [
+            "2026-07-27",
+            6,
+            "account"
+          ],
+          [
+            "2026-07-27",
+            4,
+            "billing"
+          ],
+          [
+            "2026-07-27",
+            13,
+            "bug"
+          ],
+          [
+            "2026-07-27",
+            6,
+            "feature_request"
+          ],
+          [
+            "2026-07-27",
+            7,
+            "integrations"
+          ],
+          [
+            "2026-07-27",
+            5,
+            "performance"
+          ],
+          [
+            "2026-08-03",
+            7,
+            "account"
+          ],
+          [
+            "2026-08-03",
+            5,
+            "billing"
+          ],
+          [
+            "2026-08-03",
+            8,
+            "bug"
+          ],
+          [
+            "2026-08-03",
+            10,
+            "feature_request"
+          ],
+          [
+            "2026-08-03",
+            4,
+            "integrations"
+          ],
+          [
+            "2026-08-03",
+            8,
+            "performance"
+          ],
+          [
+            "2026-08-10",
+            10,
+            "account"
+          ],
+          [
+            "2026-08-10",
+            14,
+            "billing"
+          ],
+          [
+            "2026-08-10",
+            13,
+            "bug"
+          ],
+          [
+            "2026-08-10",
+            8,
+            "feature_request"
+          ],
+          [
+            "2026-08-10",
+            45,
+            "integrations"
+          ],
+          [
+            "2026-08-10",
+            9,
+            "performance"
+          ],
+          [
+            "2026-08-17",
+            5,
+            "account"
+          ],
+          [
+            "2026-08-17",
+            11,
+            "billing"
+          ],
+          [
+            "2026-08-17",
+            11,
+            "bug"
+          ],
+          [
+            "2026-08-17",
+            10,
+            "feature_request"
+          ],
+          [
+            "2026-08-17",
+            9,
+            "integrations"
+          ],
+          [
+            "2026-08-17",
+            8,
+            "performance"
+          ],
+          [
+            "2026-08-24",
+            3,
+            "account"
+          ],
+          [
+            "2026-08-24",
+            5,
+            "billing"
+          ],
+          [
+            "2026-08-24",
+            6,
+            "bug"
+          ],
+          [
+            "2026-08-24",
+            3,
+            "feature_request"
+          ],
+          [
+            "2026-08-24",
+            13,
+            "integrations"
+          ],
+          [
+            "2026-08-24",
+            5,
+            "performance"
+          ],
+          [
+            "2026-08-31",
+            4,
+            "account"
+          ],
+          [
+            "2026-08-31",
+            9,
+            "billing"
+          ],
+          [
+            "2026-08-31",
+            12,
+            "bug"
+          ],
+          [
+            "2026-08-31",
+            9,
+            "feature_request"
+          ],
+          [
+            "2026-08-31",
+            10,
+            "integrations"
+          ],
+          [
+            "2026-08-31",
+            8,
+            "performance"
+          ],
+          [
+            "2026-09-07",
+            6,
+            "account"
+          ],
+          [
+            "2026-09-07",
+            9,
+            "billing"
+          ],
+          [
+            "2026-09-07",
+            12,
+            "bug"
+          ],
+          [
+            "2026-09-07",
+            3,
+            "feature_request"
+          ],
+          [
+            "2026-09-07",
+            5,
+            "integrations"
+          ],
+          [
+            "2026-09-07",
+            8,
+            "performance"
+          ],
+          [
+            "2026-09-14",
+            5,
+            "account"
+          ],
+          [
+            "2026-09-14",
+            9,
+            "billing"
+          ],
+          [
+            "2026-09-14",
+            14,
+            "bug"
+          ],
+          [
+            "2026-09-14",
+            6,
+            "feature_request"
+          ],
+          [
+            "2026-09-14",
+            5,
+            "integrations"
+          ],
+          [
+            "2026-09-14",
+            9,
+            "performance"
+          ],
+          [
+            "2026-09-21",
+            12,
+            "account"
+          ],
+          [
+            "2026-09-21",
+            4,
+            "billing"
+          ],
+          [
+            "2026-09-21",
+            10,
+            "bug"
+          ],
+          [
+            "2026-09-21",
+            6,
+            "feature_request"
+          ],
+          [
+            "2026-09-21",
+            3,
+            "integrations"
+          ],
+          [
+            "2026-09-21",
+            11,
+            "performance"
+          ],
+          [
+            "2026-09-28",
+            9,
+            "account"
+          ],
+          [
+            "2026-09-28",
+            10,
+            "billing"
+          ],
+          [
+            "2026-09-28",
+            5,
+            "bug"
+          ],
+          [
+            "2026-09-28",
+            3,
+            "feature_request"
+          ],
+          [
+            "2026-09-28",
+            7,
+            "integrations"
+          ],
+          [
+            "2026-09-28",
+            7,
+            "performance"
+          ],
+          [
+            "2026-10-05",
+            6,
+            "account"
+          ],
+          [
+            "2026-10-05",
+            7,
+            "billing"
+          ],
+          [
+            "2026-10-05",
+            10,
+            "bug"
+          ],
+          [
+            "2026-10-05",
+            1,
+            "feature_request"
+          ],
+          [
+            "2026-10-05",
+            7,
+            "integrations"
+          ],
+          [
+            "2026-10-05",
+            6,
+            "performance"
+          ],
+          [
+            "2026-10-12",
+            7,
+            "account"
+          ],
+          [
+            "2026-10-12",
+            8,
+            "billing"
+          ],
+          [
+            "2026-10-12",
+            9,
+            "bug"
+          ],
+          [
+            "2026-10-12",
+            3,
+            "feature_request"
+          ],
+          [
+            "2026-10-12",
+            9,
+            "integrations"
+          ],
+          [
+            "2026-10-12",
+            6,
+            "performance"
+          ],
+          [
+            "2026-10-19",
+            12,
+            "account"
+          ],
+          [
+            "2026-10-19",
+            14,
+            "billing"
+          ],
+          [
+            "2026-10-19",
+            9,
+            "bug"
+          ],
+          [
+            "2026-10-19",
+            8,
+            "feature_request"
+          ],
+          [
+            "2026-10-19",
+            7,
+            "integrations"
+          ],
+          [
+            "2026-10-19",
+            5,
+            "performance"
+          ]
+        ],
+        "row_count": 150,
+        "truncated": false,
+        "runtime_ms": 115,
+        "executed_at": "2026-10-28T18:09:39.384Z",
+        "plan_cost": 161,
+        "params": {
+          "date_range_start": "2026-04-29",
+          "date_range_end": "2026-10-29",
+          "timezone": "UTC",
+          "exclude_test_accounts": true
+        }
+      }
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "done",
+      "label": "Ran 3 queries in 117 ms"
+    },
+    {
+      "type": "run.done",
+      "usage": {
+        "input_tokens": 35731,
+        "output_tokens": 5479,
+        "cache_read_input_tokens": 26005,
+        "cost_usd": 0.10906051
+      },
+      "elapsed_ms": 23395
+    }
+  ]
+}

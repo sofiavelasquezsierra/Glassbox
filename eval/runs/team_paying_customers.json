@@ -1,0 +1,578 @@
+{
+  "latency_ms": 35662,
+  "events": [
+    {
+      "type": "run.start",
+      "run_id": "945d60e2-7372-444c-8896-3bdd817c47d6",
+      "question": "How many paying customers are on the Team plan right now?",
+      "as_of": "2026-10-28",
+      "mode": "live"
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "running",
+      "label": "Reading the schema",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "intent",
+      "intent": {
+        "status": "Found subscriptions, plans, and organizations",
+        "category": "revenue",
+        "tables": [
+          "subscriptions",
+          "plans",
+          "organizations"
+        ],
+        "answerable": true,
+        "reason_if_unanswerable": null
+      }
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "done",
+      "label": "Found subscriptions, plans, and organizations",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Paying Team customers”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Paying Team customers by week”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Paying statuses”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Include legacy plans”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Exclude test accounts”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Minimum MRR”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Timezone”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Trend period”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "plan",
+      "plan": {
+        "status": "Planned 2 metrics",
+        "headline": "Counts distinct non-test organizations with a paying Team-plan subscription as of today, plus its trend.",
+        "metrics": [
+          {
+            "id": "team_paying_customers",
+            "title": "Paying Team customers",
+            "description": "Number of distinct organizations with a current subscription on a Team-tier plan, a status that counts as paying, and MRR above zero, as of today.",
+            "chart": "kpi",
+            "unit": "count",
+            "assumptions": [
+              "paying_statuses",
+              "include_legacy_plans",
+              "exclude_test_accounts",
+              "min_mrr_cents"
+            ]
+          },
+          {
+            "id": "team_paying_customers_trend",
+            "title": "Paying Team customers by week",
+            "description": "Weekly count of distinct organizations with a paying Team-plan subscription active at the end of each week over the selected period.",
+            "chart": "line",
+            "unit": "count",
+            "assumptions": [
+              "date_range",
+              "timezone",
+              "paying_statuses",
+              "include_legacy_plans",
+              "exclude_test_accounts",
+              "min_mrr_cents"
+            ]
+          }
+        ],
+        "assumptions": [
+          {
+            "key": "paying_statuses",
+            "label": "Paying statuses",
+            "rationale": "Trialing subscriptions have not paid yet, so by default only active subscriptions count. Past-due customers still owe money but are excluded unless you choose otherwise.",
+            "type": "enum",
+            "value": "active only",
+            "options": [
+              "active only",
+              "active + past_due"
+            ]
+          },
+          {
+            "key": "include_legacy_plans",
+            "label": "Include legacy plans",
+            "rationale": "Legacy plans with Team tier are still Team customers, so they are included by default.",
+            "type": "bool",
+            "value": true
+          },
+          {
+            "key": "exclude_test_accounts",
+            "label": "Exclude test accounts",
+            "rationale": "QA, demo and load-test organizations are not real customers, per the data dictionary.",
+            "type": "bool",
+            "value": true
+          },
+          {
+            "key": "min_mrr_cents",
+            "label": "Minimum MRR",
+            "rationale": "Requiring MRR above zero keeps free or fully discounted subscriptions out of the paying count.",
+            "type": "int",
+            "value": 1,
+            "min": 0,
+            "max": 100000,
+            "unit": "cents"
+          },
+          {
+            "key": "timezone",
+            "label": "Timezone",
+            "rationale": "Determines where week boundaries fall in the trend chart.",
+            "type": "timezone",
+            "value": "UTC"
+          },
+          {
+            "key": "date_range",
+            "label": "Trend period",
+            "rationale": "The last 6 months shows recent movement in Team customers without too much noise.",
+            "type": "date_range",
+            "value": {
+              "preset": "last_6_months"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "done",
+      "label": "Planned 2 metrics",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "I need to figure out the weekly trend query counting distinct orgs with an active paying Team subscription …",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "The tricky part is determining \"active at end of week\" when I only have current status rather than historic…",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "team_paying_customers",
+      "sql": "WITH team_subs AS (\n  SELECT s.org_id\n  FROM northwind.subscriptions s\n  JOIN northwind.plans p ON p.id = s.plan_id\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE p.tier = 'team'\n    AND (:include_legacy_plans::boolean OR NOT p.is_legacy)\n    AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n    AND s.mrr_cents >= :min_mrr_cents::int\n    AND s.mrr_cents > 0\n    AND (\n      s.status = 'active'\n      OR (:paying_statuses::text = 'active + past_due' AND s.status = 'past_due')\n    )\n    AND s.canceled_at IS NULL\n    AND s.started_at < (:as_of::date + 1)::timestamp at time zone 'UTC'\n)\nSELECT count(DISTINCT org_id) AS value\nFROM team_subs",
+      "explanation": "Counts distinct non-test orgs with a current (not canceled, started by today) Team-tier subscription in a paying status and MRR at or above the minimum and above zero.",
+      "params": [
+        "include_legacy_plans",
+        "exclude_test_accounts",
+        "min_mrr_cents",
+        "paying_statuses",
+        "as_of"
+      ],
+      "signature": "adOGbEt2ism4PEIDefkHvmhD6Qcp_v9YvWxV3T3TBiw"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "1 of 2 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "Reviewing the query logic, I notice it counts distinct orgs with active team-tier subscriptions where cance…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "One caveat stands out: the hardcoded condition requiring mrr_cents > 0 actually overrides the editable min_…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "team_paying_customers_trend",
+      "sql": "WITH weeks AS (\n  SELECT w::date AS week_start,\n         -- snapshot at end of week, capped at the (exclusive) end of the range\n         (LEAST(w + interval '7 days', (:date_range_end::date)::timestamp)) AT TIME ZONE :timezone::text AS snap\n  FROM generate_series(\n    date_trunc('week', (:date_range_start::date)::timestamp),\n    ((:date_range_end::date) - 1)::timestamp,\n    interval '7 days'\n  ) AS w\n),\npaying_team_subs AS (\n  SELECT s.org_id, s.started_at, s.canceled_at\n  FROM northwind.subscriptions s\n  JOIN northwind.plans p ON p.id = s.plan_id\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE p.tier = 'team'\n    AND (:include_legacy_plans::boolean OR NOT p.is_legacy)\n    AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n    AND s.mrr_cents >= :min_mrr_cents::int\n    -- historical status is unknown: ended rows (canceled) are assumed to have been paying while open\n    AND (s.status = 'canceled'\n         OR s.status = 'active'\n         OR (s.status = 'past_due' AND :paying_statuses::text = 'active + past_due'))\n)\nSELECT w.week_start AS x,\n       COUNT(DISTINCT s.org_id) AS y\nFROM weeks w\nLEFT JOIN paying_team_subs s\n  ON s.started_at < w.snap\n AND (s.canceled_at IS NULL OR s.canceled_at >= w.snap)\nGROUP BY w.week_start\nORDER BY w.week_start",
+      "explanation": "For each week, counts distinct non-test orgs with a Team-tier subscription (MRR at least the minimum, paying status) that had started and not yet been canceled at the end of that week.",
+      "params": [
+        "date_range_end",
+        "timezone",
+        "date_range_start",
+        "include_legacy_plans",
+        "exclude_test_accounts",
+        "min_mrr_cents",
+        "paying_statuses"
+      ],
+      "signature": "FfS9KBmpFaW_s5eNkh_l6Qi7aHQvsD-ch0_WIVHgQPc"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "done",
+      "label": "Wrote 2 queries",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "One caveat stands out: the hardcoded condition requiring mrr_cents > 0 actually overrides the editable min_…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "The join to plans with a nullable plan_id is fine since null plans can't match team tier anyway, and I'll s…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "My verdict is to flag the mrr_cents override as the main issue and rewrite the query to remove that hardcod…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm tracing through the week generation logic carefully, checking how date_trunc establishes the first week…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "team_paying_customers",
+        "verdict": "warn",
+        "summary": "The count is essentially correct for today's defaults, but a hardcoded MRR filter ignores the editable Minimum MRR setting when it is lowered to 0, so I removed that filter.",
+        "issues": [
+          {
+            "code": "other",
+            "severity": "warn",
+            "message": "Hardcoded `s.mrr_cents > 0` overrides the `:min_mrr_cents` assumption (min 0). Remove it so `s.mrr_cents >= :min_mrr_cents::int` alone controls the threshold."
+          }
+        ],
+        "rewritten_sql": "WITH team_subs AS (\n  SELECT s.org_id\n  FROM northwind.subscriptions s\n  JOIN northwind.plans p ON p.id = s.plan_id\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE p.tier = 'team'\n    AND (:include_legacy_plans::boolean OR NOT p.is_legacy)\n    AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n    AND s.mrr_cents >= :min_mrr_cents::int\n    AND (\n      s.status = 'active'\n      OR (:paying_statuses::text = 'active + past_due' AND s.status = 'past_due')\n    )\n    AND s.canceled_at IS NULL\n    AND s.started_at < (:as_of::date + 1)::timestamp at time zone 'UTC'\n)\nSELECT count(DISTINCT org_id) AS value\nFROM team_subs"
+      },
+      "final_sql": "WITH team_subs AS (\n  SELECT s.org_id\n  FROM northwind.subscriptions s\n  JOIN northwind.plans p ON p.id = s.plan_id\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE p.tier = 'team'\n    AND (:include_legacy_plans::boolean OR NOT p.is_legacy)\n    AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n    AND s.mrr_cents >= :min_mrr_cents::int\n    AND (\n      s.status = 'active'\n      OR (:paying_statuses::text = 'active + past_due' AND s.status = 'past_due')\n    )\n    AND s.canceled_at IS NULL\n    AND s.started_at < (:as_of::date + 1)::timestamp at time zone 'UTC'\n)\nSELECT count(DISTINCT org_id) AS value\nFROM team_subs",
+      "signature": "1LwtOKZQ9bbjRjfmIWLaf3JBFZrJFEkGg1uLJJ_1DRQ"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "1 of 2 reviewed, 1 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "running",
+      "label": "Running queries read-only"
+    },
+    {
+      "type": "result",
+      "metric_id": "team_paying_customers",
+      "result": {
+        "columns": [
+          {
+            "name": "value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            66
+          ]
+        ],
+        "row_count": 1,
+        "truncated": false,
+        "runtime_ms": 120,
+        "executed_at": "2026-10-28T18:10:30.892Z",
+        "plan_cost": 25,
+        "params": {
+          "include_legacy_plans": true,
+          "exclude_test_accounts": true,
+          "min_mrr_cents": 1,
+          "paying_statuses": "active only",
+          "as_of": "2026-10-28"
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "team_paying_customers_trend",
+        "verdict": "warn",
+        "summary": "The weekly trend runs and is broadly right, but it counts every canceled Team subscription as paying for its whole lifetime, so trials that never converted inflate past weeks; the rewrite only counts canceled rows that have a paid invoice.",
+        "issues": [
+          {
+            "code": "question_mismatch",
+            "severity": "warn",
+            "message": "paying_team_subs treats every s.status = 'canceled' row as paying while it was open, so canceled trials (and past_due rows when 'active only' is chosen) inflate historical weeks; require evidence of payment, e.g. EXISTS a paid invoice for the subscription."
+          },
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "generate_series starts at date_trunc('week', :date_range_start), so the first x (2026-04-27) falls before the range start; acceptable for weekly buckets but be aware that the first point precedes the selected period."
+          }
+        ],
+        "rewritten_sql": "WITH weeks AS (\n  SELECT w::date AS week_start,\n         (LEAST(w + interval '7 days', (:date_range_end::date)::timestamp)) AT TIME ZONE :timezone::text AS snap\n  FROM generate_series(\n    date_trunc('week', (:date_range_start::date)::timestamp),\n    ((:date_range_end::date) - 1)::timestamp,\n    interval '7 days'\n  ) AS w\n),\npaying_team_subs AS (\n  SELECT s.org_id, s.started_at, s.canceled_at\n  FROM northwind.subscriptions s\n  JOIN northwind.plans p ON p.id = s.plan_id\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE p.tier = 'team'\n    AND (:include_legacy_plans::boolean OR NOT p.is_legacy)\n    AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n    AND s.mrr_cents >= :min_mrr_cents::int\n    AND (s.status = 'active'\n         OR (s.status = 'past_due' AND :paying_statuses::text = 'active + past_due')\n         OR (s.status = 'canceled' AND EXISTS (\n               SELECT 1 FROM northwind.invoices i\n               WHERE i.subscription_id = s.id AND i.status = 'paid')))\n)\nSELECT w.week_start AS x,\n       COUNT(DISTINCT s.org_id) AS y\nFROM weeks w\nLEFT JOIN paying_team_subs s\n  ON s.started_at < w.snap\n AND (s.canceled_at IS NULL OR s.canceled_at >= w.snap)\nGROUP BY w.week_start\nORDER BY w.week_start"
+      },
+      "final_sql": "WITH weeks AS (\n  SELECT w::date AS week_start,\n         (LEAST(w + interval '7 days', (:date_range_end::date)::timestamp)) AT TIME ZONE :timezone::text AS snap\n  FROM generate_series(\n    date_trunc('week', (:date_range_start::date)::timestamp),\n    ((:date_range_end::date) - 1)::timestamp,\n    interval '7 days'\n  ) AS w\n),\npaying_team_subs AS (\n  SELECT s.org_id, s.started_at, s.canceled_at\n  FROM northwind.subscriptions s\n  JOIN northwind.plans p ON p.id = s.plan_id\n  JOIN northwind.organizations o ON o.id = s.org_id\n  WHERE p.tier = 'team'\n    AND (:include_legacy_plans::boolean OR NOT p.is_legacy)\n    AND (NOT :exclude_test_accounts::boolean OR NOT o.is_test)\n    AND s.mrr_cents >= :min_mrr_cents::int\n    AND (s.status = 'active'\n         OR (s.status = 'past_due' AND :paying_statuses::text = 'active + past_due')\n         OR (s.status = 'canceled' AND EXISTS (\n               SELECT 1 FROM northwind.invoices i\n               WHERE i.subscription_id = s.id AND i.status = 'paid')))\n)\nSELECT w.week_start AS x,\n       COUNT(DISTINCT s.org_id) AS y\nFROM weeks w\nLEFT JOIN paying_team_subs s\n  ON s.started_at < w.snap\n AND (s.canceled_at IS NULL OR s.canceled_at >= w.snap)\nGROUP BY w.week_start\nORDER BY w.week_start",
+      "signature": "FJ-n_zkZJGwwJbkXB9PSG07qNa3OB7p2Bd5VtmnGEoY"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "warn",
+      "label": "Reviewed 2 queries: 2 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "team_paying_customers_trend",
+      "result": {
+        "columns": [
+          {
+            "name": "x",
+            "type": "date"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "2026-04-27",
+            63
+          ],
+          [
+            "2026-05-04",
+            66
+          ],
+          [
+            "2026-05-11",
+            67
+          ],
+          [
+            "2026-05-18",
+            66
+          ],
+          [
+            "2026-05-25",
+            67
+          ],
+          [
+            "2026-06-01",
+            69
+          ],
+          [
+            "2026-06-08",
+            72
+          ],
+          [
+            "2026-06-15",
+            71
+          ],
+          [
+            "2026-06-22",
+            70
+          ],
+          [
+            "2026-06-29",
+            71
+          ],
+          [
+            "2026-07-06",
+            69
+          ],
+          [
+            "2026-07-13",
+            70
+          ],
+          [
+            "2026-07-20",
+            66
+          ],
+          [
+            "2026-07-27",
+            68
+          ],
+          [
+            "2026-08-03",
+            67
+          ],
+          [
+            "2026-08-10",
+            67
+          ],
+          [
+            "2026-08-17",
+            65
+          ],
+          [
+            "2026-08-24",
+            65
+          ],
+          [
+            "2026-08-31",
+            67
+          ],
+          [
+            "2026-09-07",
+            67
+          ],
+          [
+            "2026-09-14",
+            67
+          ],
+          [
+            "2026-09-21",
+            66
+          ],
+          [
+            "2026-09-28",
+            67
+          ],
+          [
+            "2026-10-05",
+            68
+          ],
+          [
+            "2026-10-12",
+            65
+          ],
+          [
+            "2026-10-19",
+            66
+          ],
+          [
+            "2026-10-26",
+            66
+          ]
+        ],
+        "row_count": 27,
+        "truncated": false,
+        "runtime_ms": 135,
+        "executed_at": "2026-10-28T18:10:44.846Z",
+        "plan_cost": 4792,
+        "params": {
+          "date_range_end": "2026-10-29",
+          "timezone": "UTC",
+          "date_range_start": "2026-04-29",
+          "include_legacy_plans": true,
+          "exclude_test_accounts": true,
+          "min_mrr_cents": 1,
+          "paying_statuses": "active only"
+        }
+      }
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "done",
+      "label": "Ran 2 queries in 135 ms"
+    },
+    {
+      "type": "run.done",
+      "usage": {
+        "input_tokens": 26136,
+        "output_tokens": 5681,
+        "cache_read_input_tokens": 19677,
+        "cost_usd": 0.10735280999999999
+      },
+      "elapsed_ms": 35662
+    }
+  ]
+}

@@ -1,0 +1,373 @@
+{
+  "ran_at": "2026-10-28T18:10:45.122Z",
+  "models": {
+    "intent": "claude-haiku-5-5",
+    "plan": "claude-sonnet-5-5",
+    "sql": "claude-sonnet-5-5",
+    "review": "claude-opus-5-5"
+  },
+  "dictionary": "default starter entries (src/data/dictionary.ts)",
+  "summary": {
+    "passed": 7,
+    "total": 10,
+    "cost_usd": 1.072,
+    "median_latency_ms": 25453,
+    "reviewer_flagged": 7
+  },
+  "results": [
+    {
+      "id": "churned_orgs_q3",
+      "question": "How many customers churned in Q3 2026?",
+      "trap": "Plan changes close subscription rows; only cancel_reason = 'churn' is churn.",
+      "kind": "number",
+      "unit": "count",
+      "expected": 31,
+      "got": 31,
+      "pass": true,
+      "headline_metric": "churned_customers",
+      "reviewer": [
+        {
+          "verdict": "warn",
+          "codes": [
+            "date_range",
+            "question_mismatch"
+          ],
+          "rewrote": true
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "date_range",
+            "date_range"
+          ],
+          "rewrote": true
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "other",
+            "join_fanout"
+          ],
+          "rewrote": true
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 38020,
+      "cost_usd": 0.2438,
+      "error": null
+    },
+    {
+      "id": "net_revenue_sep",
+      "question": "What was our paid revenue in September 2026, net of refunds?",
+      "trap": "Test orgs carry paid invoices; refunds are negative invoice rows.",
+      "kind": "number",
+      "unit": "usd",
+      "expected": 47904.96,
+      "got": 46480.96,
+      "pass": false,
+      "headline_metric": "paid_revenue",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "question_mismatch",
+            "date_range"
+          ],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 27581,
+      "cost_usd": 0.0891,
+      "error": null
+    },
+    {
+      "id": "top_org_october",
+      "question": "Which organization had the most product activity in October 2026?",
+      "trap": "The synthetic load-test tenant has the most events by far.",
+      "kind": "label",
+      "expected": "Tidewell Robotics",
+      "got": "Tidewell Robotics (#122)",
+      "pass": true,
+      "headline_metric": "top_orgs_ranking",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "date_range"
+          ],
+          "rewrote": true
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 22917,
+      "cost_usd": 0.0953,
+      "error": null
+    },
+    {
+      "id": "ticket_spike_category",
+      "question": "Which support ticket category spiked in the week of August 10, 2026?",
+      "trap": "Needs a week-over-baseline comparison, not just the biggest category overall.",
+      "kind": "label",
+      "expected": "integrations",
+      "got": "integrations",
+      "pass": true,
+      "headline_metric": "spike_week_by_category",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "date_range",
+            "other"
+          ],
+          "rewrote": true
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 23395,
+      "cost_usd": 0.1091,
+      "error": null
+    },
+    {
+      "id": "active_customer_users_30d",
+      "question": "How many customer users were active in the last 30 days?",
+      "trap": "Northwind staff (is_internal) are members of customer orgs; test orgs too.",
+      "kind": "number",
+      "unit": "count",
+      "expected": 4316,
+      "got": 4362,
+      "pass": false,
+      "headline_metric": "active_users",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "date_range"
+          ],
+          "rewrote": true
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "date_range"
+          ],
+          "rewrote": true
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 25453,
+      "cost_usd": 0.1193,
+      "error": null
+    },
+    {
+      "id": "current_mrr",
+      "question": "What is our current MRR?",
+      "trap": "Grandfathered contracts have NULL plan_id (inner joins drop them); trialing is not paying.",
+      "kind": "number",
+      "unit": "usd",
+      "expected": 54396,
+      "got": 54396,
+      "pass": true,
+      "headline_metric": "current_mrr",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "question_mismatch",
+            "date_range",
+            "timezone"
+          ],
+          "rewrote": true
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 29782,
+      "cost_usd": 0.1082,
+      "error": null
+    },
+    {
+      "id": "la_feature_events_q3_local",
+      "question": "How many feature-usage events did our Los Angeles–timezone customers have in Q3 2026, using their local time?",
+      "trap": "Their June 30 evening push lands on July 1 in UTC.",
+      "kind": "number",
+      "unit": "count",
+      "expected": 14932,
+      "got": 14932,
+      "pass": true,
+      "headline_metric": "feature_events_total",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        }
+      ],
+      "metrics": 2,
+      "latency_ms": 17312,
+      "cost_usd": 0.0541,
+      "error": null
+    },
+    {
+      "id": "team_paying_customers",
+      "question": "How many paying customers are on the Team plan right now?",
+      "trap": "Team exists as two plan rows (legacy pricing); filtering on plans.name = 'Team' misses most of them.",
+      "kind": "number",
+      "unit": "count",
+      "expected": 68,
+      "got": 66,
+      "pass": false,
+      "headline_metric": "team_paying_customers",
+      "reviewer": [
+        {
+          "verdict": "warn",
+          "codes": [
+            "other"
+          ],
+          "rewrote": true
+        },
+        {
+          "verdict": "warn",
+          "codes": [
+            "question_mismatch",
+            "date_range"
+          ],
+          "rewrote": true
+        }
+      ],
+      "metrics": 2,
+      "latency_ms": 35662,
+      "cost_usd": 0.1074,
+      "error": null
+    },
+    {
+      "id": "unresolved_share_october",
+      "question": "What share of support tickets opened in October 2026 are still unresolved?",
+      "trap": "resolved_at IS NULL means open; averages over NULLs mislead.",
+      "kind": "number",
+      "unit": "percent",
+      "expected": 11.4,
+      "got": 11.4,
+      "pass": true,
+      "headline_metric": "unresolved_share",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 15491,
+      "cost_usd": 0.0651,
+      "error": null
+    },
+    {
+      "id": "upgrades_april",
+      "question": "How many customers upgraded their plan in April 2026?",
+      "trap": "Upgrades are a cancel_reason on the old row, not a new-subscription count (which includes new signups).",
+      "kind": "number",
+      "unit": "count",
+      "expected": 26,
+      "got": 26,
+      "pass": true,
+      "headline_metric": "upgraded_customers",
+      "reviewer": [
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        },
+        {
+          "verdict": "pass",
+          "codes": [],
+          "rewrote": false
+        }
+      ],
+      "metrics": 3,
+      "latency_ms": 17927,
+      "cost_usd": 0.0802,
+      "error": null
+    }
+  ],
+  "history": [
+    {
+      "ran_at": "2026-10-28",
+      "passed": 7,
+      "total": 10,
+      "cost_usd": 1.154,
+      "note": "before fixing the custom date-range contract and intent prompt"
+    },
+    {
+      "ran_at": "2026-10-28T18:10:45.122Z",
+      "passed": 7,
+      "total": 10,
+      "cost_usd": 1.072,
+      "note": "re-graded"
+    }
+  ]
+}

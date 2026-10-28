@@ -1,0 +1,710 @@
+{
+  "latency_ms": 25453,
+  "events": [
+    {
+      "type": "run.start",
+      "run_id": "5bf4538c-9f65-436c-9d54-f0941fcaf249",
+      "question": "How many customer users were active in the last 30 days?",
+      "as_of": "2026-10-28",
+      "mode": "live"
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "running",
+      "label": "Reading the schema",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "intent",
+      "intent": {
+        "status": "Found users and events for activity check",
+        "category": "engagement",
+        "tables": [
+          "users",
+          "events",
+          "organizations"
+        ],
+        "answerable": true,
+        "reason_if_unanswerable": null
+      }
+    },
+    {
+      "type": "step",
+      "step": "intent",
+      "status": "done",
+      "label": "Found users and events for activity check",
+      "model": "claude-haiku-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Active customer users”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Daily active users”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Choosing “Active users by role”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Active window”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Activity definition”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Exclude test orgs”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Exclude internal users”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "running",
+      "label": "Planning metrics and assumptions",
+      "detail": "Defining “Timezone”",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "plan",
+      "plan": {
+        "status": "Planned active customer users",
+        "headline": "Counts distinct customer users with qualifying activity in the active window, with a daily trend and a breakdown by role.",
+        "metrics": [
+          {
+            "id": "active_users",
+            "title": "Active customer users",
+            "description": "Distinct users with at least one qualifying event in the active window ending on the as-of date, excluding internal users and, by default, test organizations.",
+            "chart": "kpi",
+            "unit": "count",
+            "assumptions": [
+              "active_window_days",
+              "activity_type",
+              "exclude_test_accounts",
+              "exclude_internal_users",
+              "timezone"
+            ]
+          },
+          {
+            "id": "daily_active_users",
+            "title": "Daily active users",
+            "description": "Distinct users with at least one qualifying event on each day over the active window, bucketed by day in the chosen timezone.",
+            "chart": "line",
+            "unit": "count",
+            "assumptions": [
+              "active_window_days",
+              "activity_type",
+              "exclude_test_accounts",
+              "exclude_internal_users",
+              "timezone"
+            ]
+          },
+          {
+            "id": "active_users_by_role",
+            "title": "Active users by role",
+            "description": "Distinct active users in the active window grouped by role (owner, admin, member, viewer).",
+            "chart": "bar",
+            "unit": "count",
+            "assumptions": [
+              "active_window_days",
+              "activity_type",
+              "exclude_test_accounts",
+              "exclude_internal_users",
+              "timezone"
+            ]
+          }
+        ],
+        "assumptions": [
+          {
+            "key": "active_window_days",
+            "label": "Active window",
+            "rationale": "The question asks about the last 30 days, so a user counts as active if they had qualifying activity in that many days.",
+            "type": "int",
+            "value": 30,
+            "min": 1,
+            "max": 365,
+            "unit": "days"
+          },
+          {
+            "key": "activity_type",
+            "label": "Activity definition",
+            "rationale": "Any event (login or feature use) counts as activity by default, since both show a person actively using the product.",
+            "type": "enum",
+            "value": "any_event",
+            "options": [
+              "any_event",
+              "login_only",
+              "feature_used_only"
+            ]
+          },
+          {
+            "key": "exclude_test_accounts",
+            "label": "Exclude test orgs",
+            "rationale": "The data dictionary says test organizations are QA, demo and load-test tenants that should be excluded from business metrics.",
+            "type": "bool",
+            "value": true
+          },
+          {
+            "key": "exclude_internal_users",
+            "label": "Exclude internal users",
+            "rationale": "Internal staff are not customers, so they are left out of customer user counts.",
+            "type": "bool",
+            "value": true
+          },
+          {
+            "key": "timezone",
+            "label": "Timezone",
+            "rationale": "Day boundaries for the window and the daily trend depend on the timezone; UTC is a neutral default.",
+            "type": "timezone",
+            "value": "UTC"
+          }
+        ]
+      }
+    },
+    {
+      "type": "step",
+      "step": "plan",
+      "status": "done",
+      "label": "Planned active customer users",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "active_users_by_role",
+      "sql": "WITH bounds AS (SELECT ((:as_of::date - :active_window_days::int + 1)::timestamp AT TIME ZONE :timezone::text) AS win_start, (((:as_of::date) + 1)::timestamp AT TIME ZONE :timezone::text) AS win_end), active AS (SELECT DISTINCT u.id AS user_id, u.role FROM northwind.events e JOIN northwind.users u ON u.id = e.user_id JOIN northwind.organizations o ON o.id = u.org_id CROSS JOIN bounds b WHERE e.occurred_at >= b.win_start AND e.occurred_at < b.win_end AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used')) AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)) SELECT role AS label, count(*) AS value FROM active GROUP BY role ORDER BY value DESC",
+      "explanation": "Counts distinct users with a qualifying event in the window of active_window_days ending on the as-of date (inclusive, in the chosen timezone), after applying activity type, test-org and internal-user filters, grouped by role.",
+      "params": [
+        "as_of",
+        "active_window_days",
+        "timezone",
+        "activity_type",
+        "exclude_test_accounts",
+        "exclude_internal_users"
+      ],
+      "signature": "vv8WIfF7Iq4VAxIouRr8ylwkVrAptR6x5ZCYgpKgJmw"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "1 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "daily_active_users",
+      "sql": "WITH params AS (SELECT (:as_of::date) AS as_of_date, :active_window_days::int AS win), days AS (SELECT generate_series((p.as_of_date - p.win + 1)::timestamp, p.as_of_date::timestamp, interval '1 day')::date AS d FROM params p), bounds AS (SELECT ((p.as_of_date - p.win + 1)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((p.as_of_date + 1)::timestamp AT TIME ZONE :timezone::text) AS end_ts FROM params p), activity AS (SELECT (e.occurred_at AT TIME ZONE :timezone::text)::date AS d, e.user_id FROM events e JOIN users u ON u.id = e.user_id JOIN organizations o ON o.id = u.org_id CROSS JOIN bounds b WHERE e.occurred_at >= b.start_ts AND e.occurred_at < b.end_ts AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used')) AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)), daily AS (SELECT d, count(DISTINCT user_id) AS dau FROM activity GROUP BY d) SELECT days.d AS x, COALESCE(daily.dau, 0) AS y FROM days LEFT JOIN daily ON daily.d = days.d ORDER BY days.d",
+      "explanation": "Counts distinct qualifying users per day in the chosen timezone over the window ending on the as-of date (inclusive), filling days with no activity with 0 and applying activity type, test-org and internal-user filters.",
+      "params": [
+        "as_of",
+        "active_window_days",
+        "timezone",
+        "activity_type",
+        "exclude_test_accounts",
+        "exclude_internal_users"
+      ],
+      "signature": "tAPVTWj6-OoDA6TUv-CgQ6MmsWDd8p60t0F7J9IyifQ"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "running",
+      "label": "Writing SQL",
+      "detail": "2 of 3 written",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "sql",
+      "metric_id": "active_users",
+      "sql": "WITH bounds AS (SELECT ((:as_of::date - :active_window_days::int + 1)::timestamp AT TIME ZONE :timezone::text) AS start_ts, (((:as_of::date) + 1)::timestamp AT TIME ZONE :timezone::text) AS end_ts), prev_bounds AS (SELECT ((:as_of::date - 2 * :active_window_days::int + 1)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((:as_of::date - :active_window_days::int + 1)::timestamp AT TIME ZONE :timezone::text) AS end_ts), qualified AS (SELECT e.user_id, e.occurred_at FROM events e JOIN users u ON u.id = e.user_id JOIN organizations o ON o.id = u.org_id WHERE (NOT :exclude_test_accounts::boolean OR NOT o.is_test) AND (NOT :exclude_internal_users::boolean OR NOT u.is_internal) AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used'))) SELECT (SELECT count(DISTINCT q.user_id) FROM qualified q, bounds b WHERE q.occurred_at >= b.start_ts AND q.occurred_at < b.end_ts) AS value, (SELECT count(DISTINCT q.user_id) FROM qualified q, prev_bounds p WHERE q.occurred_at >= p.start_ts AND q.occurred_at < p.end_ts) AS previous_value",
+      "explanation": "Counts distinct non-internal, non-test-org users with a qualifying event in the window of active_window_days days ending on the as-of date (inclusive, in the chosen timezone), with the preceding equal-length window as previous_value.",
+      "params": [
+        "as_of",
+        "active_window_days",
+        "timezone",
+        "exclude_test_accounts",
+        "exclude_internal_users",
+        "activity_type"
+      ],
+      "signature": "0T3k3QU4H3_uMBulbu1BacgukEG8TL5Ogtf434fpKfI"
+    },
+    {
+      "type": "step",
+      "step": "sql",
+      "status": "done",
+      "label": "Wrote 3 queries",
+      "model": "claude-sonnet-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I need to think about whether the as_of date itself should be included in the window, since today's data is…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm working through the exact 30-day window boundaries given data ends 10-27 but the as-of date is 10-28 — …",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I need to think about whether the as_of date itself should be included in the window, since today's data is…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'll lean toward treating the 30-day window as ending just before the as_of date to avoid that distortion.",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm checking the date window: as_of is 2026-10-28 but data only goes through 2026-10-27, so including \"toda…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'll lean toward treating the 30-day window as ending just before the as_of date to avoid that distortion.",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "As for the joins (events to users to organizations), timezone handling, and distinct counting, those all lo…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'll adjust the window bounds so it spans from as_of minus the window length up through the day before as_of.",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "I'm working through the exact 30-day window boundaries given data ends 10-27 but the as-of date is 10-28 — …",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "That's a minor edge case worth noting but not a real flaw.",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "Checking the rest: distinct user counts per role avoid fanout, joins on org_id are correct, and the bar cha…",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "active_users_by_role",
+        "verdict": "pass",
+        "summary": "The query correctly counts each active customer user once, grouped by role, over a 30-day window ending on the as-of date, excluding test orgs and internal users.",
+        "issues": [],
+        "rewritten_sql": null
+      },
+      "final_sql": "WITH bounds AS (SELECT ((:as_of::date - :active_window_days::int + 1)::timestamp AT TIME ZONE :timezone::text) AS win_start, (((:as_of::date) + 1)::timestamp AT TIME ZONE :timezone::text) AS win_end), active AS (SELECT DISTINCT u.id AS user_id, u.role FROM northwind.events e JOIN northwind.users u ON u.id = e.user_id JOIN northwind.organizations o ON o.id = u.org_id CROSS JOIN bounds b WHERE e.occurred_at >= b.win_start AND e.occurred_at < b.win_end AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used')) AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)) SELECT role AS label, count(*) AS value FROM active GROUP BY role ORDER BY value DESC",
+      "signature": "vv8WIfF7Iq4VAxIouRr8ylwkVrAptR6x5ZCYgpKgJmw"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "1 of 3 reviewed",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "running",
+      "label": "Running queries read-only"
+    },
+    {
+      "type": "result",
+      "metric_id": "active_users_by_role",
+      "result": {
+        "columns": [
+          {
+            "name": "label",
+            "type": "text"
+          },
+          {
+            "name": "value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "member",
+            2728
+          ],
+          [
+            "admin",
+            674
+          ],
+          [
+            "viewer",
+            592
+          ],
+          [
+            "owner",
+            322
+          ]
+        ],
+        "row_count": 4,
+        "truncated": false,
+        "runtime_ms": 157,
+        "executed_at": "2026-10-28T18:09:46.221Z",
+        "plan_cost": 2359,
+        "params": {
+          "as_of": "2026-10-28",
+          "active_window_days": 30,
+          "timezone": "UTC",
+          "activity_type": "any_event",
+          "exclude_test_accounts": true,
+          "exclude_internal_users": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "daily_active_users",
+        "verdict": "warn",
+        "summary": "The daily trend counts customer users correctly, but its window includes today (the as-of date), which has no complete data, so the chart ends on a misleading near-zero point; the rewrite uses the 30 full days before the as-of date.",
+        "issues": [
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "Window runs from as_of - win + 1 through as_of inclusive, so the last x is 2026-10-28 (today, data ends 2026-10-27) and shows a false drop; use days as_of - win through as_of - 1 with end_ts at as_of midnight in :timezone."
+          }
+        ],
+        "rewritten_sql": "WITH params AS (SELECT (:as_of::date) AS as_of_date, :active_window_days::int AS win), days AS (SELECT generate_series((p.as_of_date - p.win)::timestamp, (p.as_of_date - 1)::timestamp, interval '1 day')::date AS d FROM params p), bounds AS (SELECT ((p.as_of_date - p.win)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((p.as_of_date)::timestamp AT TIME ZONE :timezone::text) AS end_ts FROM params p), activity AS (SELECT (e.occurred_at AT TIME ZONE :timezone::text)::date AS d, e.user_id FROM events e JOIN users u ON u.id = e.user_id JOIN organizations o ON o.id = u.org_id CROSS JOIN bounds b WHERE e.occurred_at >= b.start_ts AND e.occurred_at < b.end_ts AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used')) AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)), daily AS (SELECT d, count(DISTINCT user_id) AS dau FROM activity GROUP BY d) SELECT days.d AS x, COALESCE(daily.dau, 0) AS y FROM days LEFT JOIN daily ON daily.d = days.d ORDER BY days.d"
+      },
+      "final_sql": "WITH params AS (SELECT (:as_of::date) AS as_of_date, :active_window_days::int AS win), days AS (SELECT generate_series((p.as_of_date - p.win)::timestamp, (p.as_of_date - 1)::timestamp, interval '1 day')::date AS d FROM params p), bounds AS (SELECT ((p.as_of_date - p.win)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((p.as_of_date)::timestamp AT TIME ZONE :timezone::text) AS end_ts FROM params p), activity AS (SELECT (e.occurred_at AT TIME ZONE :timezone::text)::date AS d, e.user_id FROM events e JOIN users u ON u.id = e.user_id JOIN organizations o ON o.id = u.org_id CROSS JOIN bounds b WHERE e.occurred_at >= b.start_ts AND e.occurred_at < b.end_ts AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used')) AND (NOT :exclude_test_accounts::boolean OR o.is_test = false) AND (NOT :exclude_internal_users::boolean OR u.is_internal = false)), daily AS (SELECT d, count(DISTINCT user_id) AS dau FROM activity GROUP BY d) SELECT days.d AS x, COALESCE(daily.dau, 0) AS y FROM days LEFT JOIN daily ON daily.d = days.d ORDER BY days.d",
+      "signature": "3KUv95E1AQMKyPqI7AmOGkie2MbJA9ST9OTFGMxYwlA"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "running",
+      "label": "Reviewing queries",
+      "detail": "2 of 3 reviewed, 1 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "daily_active_users",
+      "result": {
+        "columns": [
+          {
+            "name": "x",
+            "type": "date"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            "2026-09-28",
+            721
+          ],
+          [
+            "2026-09-29",
+            754
+          ],
+          [
+            "2026-09-30",
+            745
+          ],
+          [
+            "2026-10-01",
+            683
+          ],
+          [
+            "2026-10-02",
+            688
+          ],
+          [
+            "2026-10-03",
+            191
+          ],
+          [
+            "2026-10-04",
+            229
+          ],
+          [
+            "2026-10-05",
+            706
+          ],
+          [
+            "2026-10-06",
+            717
+          ],
+          [
+            "2026-10-07",
+            713
+          ],
+          [
+            "2026-10-08",
+            766
+          ],
+          [
+            "2026-10-09",
+            685
+          ],
+          [
+            "2026-10-10",
+            185
+          ],
+          [
+            "2026-10-11",
+            212
+          ],
+          [
+            "2026-10-12",
+            746
+          ],
+          [
+            "2026-10-13",
+            704
+          ],
+          [
+            "2026-10-14",
+            735
+          ],
+          [
+            "2026-10-15",
+            768
+          ],
+          [
+            "2026-10-16",
+            710
+          ],
+          [
+            "2026-10-17",
+            182
+          ],
+          [
+            "2026-10-18",
+            189
+          ],
+          [
+            "2026-10-19",
+            733
+          ],
+          [
+            "2026-10-20",
+            746
+          ],
+          [
+            "2026-10-21",
+            747
+          ],
+          [
+            "2026-10-22",
+            762
+          ],
+          [
+            "2026-10-23",
+            765
+          ],
+          [
+            "2026-10-24",
+            183
+          ],
+          [
+            "2026-10-25",
+            222
+          ],
+          [
+            "2026-10-26",
+            740
+          ],
+          [
+            "2026-10-27",
+            735
+          ]
+        ],
+        "row_count": 30,
+        "truncated": false,
+        "runtime_ms": 190,
+        "executed_at": "2026-10-28T18:09:49.422Z",
+        "plan_cost": 4770,
+        "params": {
+          "as_of": "2026-10-28",
+          "active_window_days": 30,
+          "timezone": "UTC",
+          "activity_type": "any_event",
+          "exclude_test_accounts": true,
+          "exclude_internal_users": true
+        }
+      }
+    },
+    {
+      "type": "review",
+      "review": {
+        "metric_id": "active_users",
+        "verdict": "warn",
+        "summary": "The count is correct, but the 30-day window includes today (2026-10-28), which has no data yet, so it really covers 29 days and is compared against a full 30-day prior period.",
+        "issues": [
+          {
+            "code": "date_range",
+            "severity": "warn",
+            "message": "bounds.end_ts is :as_of + 1, so the window includes today (as_of), which has no events yet (data ends 2026-10-27); shift both windows to end at :as_of exclusive so they cover 30 complete days each."
+          }
+        ],
+        "rewritten_sql": "WITH bounds AS (SELECT ((:as_of::date - :active_window_days::int)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((:as_of::date)::timestamp AT TIME ZONE :timezone::text) AS end_ts), prev_bounds AS (SELECT ((:as_of::date - 2 * :active_window_days::int)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((:as_of::date - :active_window_days::int)::timestamp AT TIME ZONE :timezone::text) AS end_ts), qualified AS (SELECT e.user_id, e.occurred_at FROM events e JOIN users u ON u.id = e.user_id JOIN organizations o ON o.id = u.org_id WHERE (NOT :exclude_test_accounts::boolean OR NOT o.is_test) AND (NOT :exclude_internal_users::boolean OR NOT u.is_internal) AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used'))) SELECT (SELECT count(DISTINCT q.user_id) FROM qualified q, bounds b WHERE q.occurred_at >= b.start_ts AND q.occurred_at < b.end_ts) AS value, (SELECT count(DISTINCT q.user_id) FROM qualified q, prev_bounds p WHERE q.occurred_at >= p.start_ts AND q.occurred_at < p.end_ts) AS previous_value"
+      },
+      "final_sql": "WITH bounds AS (SELECT ((:as_of::date - :active_window_days::int)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((:as_of::date)::timestamp AT TIME ZONE :timezone::text) AS end_ts), prev_bounds AS (SELECT ((:as_of::date - 2 * :active_window_days::int)::timestamp AT TIME ZONE :timezone::text) AS start_ts, ((:as_of::date - :active_window_days::int)::timestamp AT TIME ZONE :timezone::text) AS end_ts), qualified AS (SELECT e.user_id, e.occurred_at FROM events e JOIN users u ON u.id = e.user_id JOIN organizations o ON o.id = u.org_id WHERE (NOT :exclude_test_accounts::boolean OR NOT o.is_test) AND (NOT :exclude_internal_users::boolean OR NOT u.is_internal) AND (:activity_type::text = 'any_event' OR (:activity_type::text = 'login_only' AND e.type = 'login') OR (:activity_type::text = 'feature_used_only' AND e.type = 'feature_used'))) SELECT (SELECT count(DISTINCT q.user_id) FROM qualified q, bounds b WHERE q.occurred_at >= b.start_ts AND q.occurred_at < b.end_ts) AS value, (SELECT count(DISTINCT q.user_id) FROM qualified q, prev_bounds p WHERE q.occurred_at >= p.start_ts AND q.occurred_at < p.end_ts) AS previous_value",
+      "signature": "0KLESh9sv0PVZT9xUUn_NXTvTkKMZovnwuRBXmoAAXI"
+    },
+    {
+      "type": "step",
+      "step": "review",
+      "status": "warn",
+      "label": "Reviewed 3 queries: 2 flagged",
+      "model": "claude-opus-5-5"
+    },
+    {
+      "type": "result",
+      "metric_id": "active_users",
+      "result": {
+        "columns": [
+          {
+            "name": "value",
+            "type": "number"
+          },
+          {
+            "name": "previous_value",
+            "type": "number"
+          }
+        ],
+        "rows": [
+          [
+            4362,
+            3979
+          ]
+        ],
+        "row_count": 1,
+        "truncated": false,
+        "runtime_ms": 989,
+        "executed_at": "2026-10-28T18:09:53.179Z",
+        "plan_cost": 30431,
+        "params": {
+          "as_of": "2026-10-28",
+          "active_window_days": 30,
+          "timezone": "UTC",
+          "exclude_test_accounts": true,
+          "exclude_internal_users": true,
+          "activity_type": "any_event"
+        }
+      }
+    },
+    {
+      "type": "step",
+      "step": "execute",
+      "status": "done",
+      "label": "Ran 3 queries in 989 ms"
+    },
+    {
+      "type": "run.done",
+      "usage": {
+        "input_tokens": 35279,
+        "output_tokens": 5667,
+        "cache_read_input_tokens": 26005,
+        "cost_usd": 0.11934631
+      },
+      "elapsed_ms": 25453
+    }
+  ]
+}

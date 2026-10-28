@@ -8,7 +8,7 @@ const key = z
 const base = {
   key,
   label: z.string().min(1).max(60),
-  rationale: z.string().max(240),
+  rationale: z.string().max(400),
 };
 
 export const DateRangeValue = z.union([
