@@ -1,0 +1,33 @@
+{
+  "seed": 20261028,
+  "tables": {
+    "plans": {
+      "rows": 6,
+      "sha256": "e4f129eab39a9d78"
+    },
+    "organizations": {
+      "rows": 505,
+      "sha256": "97fcea503496a32c"
+    },
+    "users": {
+      "rows": 6616,
+      "sha256": "e077d8396071a5ee"
+    },
+    "subscriptions": {
+      "rows": 681,
+      "sha256": "25b89f29d38945b0"
+    },
+    "invoices": {
+      "rows": 2296,
+      "sha256": "a6833366896921c3"
+    },
+    "events": {
+      "rows": 322936,
+      "sha256": "203f54d15b81db76"
+    },
+    "support_tickets": {
+      "rows": 2110,
+      "sha256": "6189ee8a82eeb29d"
+    }
+  }
+}
