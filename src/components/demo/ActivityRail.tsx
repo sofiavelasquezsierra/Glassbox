@@ -17,7 +17,7 @@ export function ActivityRail({ state }: { state: RunState }) {
   return (
     <section aria-labelledby="rail-h" className="rounded-lg border border-rule bg-surface p-4 shadow-1">
       <header className="mb-4 flex items-baseline justify-between gap-2">
-        <h2 id="rail-h" className="eyebrow">
+        <h2 id="rail-h" className="eyebrow whitespace-nowrap">
           Agent activity
         </h2>
         {state.status !== "idle" && (

@@ -7,7 +7,7 @@ export function Article({ children, serif, className }: { children: React.ReactN
     <article
       className={cn(
         "mx-auto max-w-[72ch] px-4 py-12 text-ink-2 sm:px-6",
-        serif ? "font-serif text-[1.1875rem] leading-[1.7]" : "text-base leading-7",
+        serif ? "font-display text-[1.1875rem] leading-[1.7]" : "text-base leading-7",
         "[&_a]:text-ink [&_a]:underline [&_a]:decoration-rule-strong [&_a]:underline-offset-2 hover:[&_a]:decoration-ink",
         "[&_strong]:font-medium [&_strong]:text-ink [&_code]:rounded-xs [&_code]:bg-sunk [&_code]:px-1 [&_code]:font-mono [&_code]:text-[0.8em] [&_code]:text-ink",
         className,
@@ -26,7 +26,7 @@ export function Kicker({ children }: { children: React.ReactNode }) {
 export function Title({ children, lede }: { children: React.ReactNode; lede?: React.ReactNode }) {
   return (
     <header className="mb-10">
-      <h1 className="mt-2 font-serif text-4xl leading-[1.1] tracking-tight text-ink sm:text-[3.25rem]">{children}</h1>
+      <h1 className="mt-2 display text-4xl leading-[1.1] text-ink sm:text-[3.25rem]">{children}</h1>
       {lede && <p className="mt-4 font-sans text-lg leading-relaxed text-ink-2">{lede}</p>}
     </header>
   );
@@ -57,7 +57,7 @@ export function List({ children }: { children: React.ReactNode }) {
 export function Todo({ children }: { children: React.ReactNode }) {
   return (
     <div className="my-5 rounded-md border border-dashed border-accent bg-accent-wash-2 px-4 py-3 font-sans text-sm text-ink-2">
-      <span className="mr-1.5 font-mono text-2xs font-medium text-accent-ink">TODO(you)</span>
+      <span className="mr-1.5 font-mono text-2xs font-medium text-accent-ink">Sofia Velasquez Sierra</span>
       {children}
     </div>
   );

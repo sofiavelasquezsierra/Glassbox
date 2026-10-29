@@ -18,7 +18,7 @@ export function ModeToggle({ mode, onChange, disabled }: { mode: Mode; onChange:
           title={m === "cached" ? "Replay a recorded run of the real agent: instant, no API calls" : "Run the real agent against the database (rate limited)"}
           className={cn("flex h-7 items-center gap-1.5 rounded-sm px-2.5 transition-colors", mode === m ? "bg-surface font-medium text-ink shadow-1" : "text-ink-2 hover:text-ink")}
         >
-          {m === "live" && <span className={cn("size-1.5 rounded-full", mode === "live" ? "bg-pass motion-safe:animate-pulse" : "bg-ink-3")} />}
+          {m === "live" && <span className={cn("size-1.5 rounded-full", mode === "live" ? "bg-brand motion-safe:animate-pulse" : "bg-ink-3")} />}
           {m === "cached" ? "Recorded" : "Live"}
         </button>
       ))}

@@ -92,12 +92,22 @@ export function Demo() {
       <section className="mb-8 grid gap-6 lg:grid-cols-[1fr_340px] lg:items-end">
         <div>
           <p className="eyebrow">A design-engineering demo</p>
-          <h1 className="mt-2 max-w-3xl font-serif text-3xl tracking-tight text-ink sm:text-4xl">An analytics agent that shows its work.</h1>
-          <p className="mt-3 max-w-2xl text-lg text-ink-2">
+          <h1 className="display mt-3 max-w-3xl text-4xl text-ink uppercase sm:text-5xl lg:text-6xl">
+            An analyst that
+            <br />
+            <span className="text-brand-ink">shows its work</span>
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg text-ink-2">
             Ask a question about a fictional SaaS company. The agent states its assumptions, writes SQL, has a second agent review it, runs it read-only against Supabase, and every number links back to the query and rows behind it.
           </p>
-          <div className="mt-3">
-            <HowItWorks />
+          <div className="mt-6">
+            <HowItWorks
+              leading={
+                <Button variant="primary" onClick={() => askRef.current?.focus()}>
+                  Ask a question
+                </Button>
+              }
+            />
           </div>
         </div>
         <WalkthroughVideo />
@@ -120,7 +130,7 @@ export function Demo() {
         <div className="order-2 min-w-0 lg:order-1">
           {state.status === "idle" ? (
             <div className="rounded-lg border border-dashed border-rule-strong">
-              <EmptyState icon={<DatabaseIcon />} title="Ask a question to build a dashboard" action={<Button onClick={() => ask(SUGGESTED[0]!)}>Try &ldquo;{SUGGESTED[0]}&rdquo;</Button>}>
+              <EmptyState icon={<DatabaseIcon />} title="Ask a question to build a dashboard" action={<Button variant="primary" onClick={() => ask(SUGGESTED[0]!)}>Try &ldquo;{SUGGESTED[0]}&rdquo;</Button>}>
                 The agent reads the schema, makes its assumptions explicit, and shows every query it runs. Press <Kbd>/</Kbd> to start typing.
               </EmptyState>
             </div>

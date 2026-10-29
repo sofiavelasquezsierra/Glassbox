@@ -100,10 +100,11 @@ function Specimen({ label, children, className, pad = true }: { label: string; c
 
 const COLOR_GROUPS: [string, [string, string][]][] = [
   ["Surfaces", [["--paper", "Page"], ["--surface", "Cards, chart surface"], ["--surface-sunk", "Code, wells, inputs"], ["--surface-raised", "Popovers, panels"]]],
-  ["Ink", [["--ink", "Primary text · 15.9:1"], ["--ink-2", "Secondary · 6.8:1"], ["--ink-3", "Muted, axis labels · 5.0:1"]]],
+  ["Ink", [["--ink", "Primary text · 17.9:1 dark"], ["--ink-2", "Secondary · 9.6:1 dark"], ["--ink-3", "Muted, axis labels · 5.9:1 dark"]]],
   ["Rules", [["--rule", "Hairlines"], ["--rule-strong", "Borders, axis"]]],
+  ["Brand (actions and emphasis)", [["--brand", "Primary button, active nav"], ["--brand-ink", "Brand as text (darker on light)"], ["--brand-wash", "Selection, quiet fills"]]],
   ["Accent (assumptions only)", [["--accent", "Changed marker"], ["--accent-ink", "Changed value text"], ["--accent-wash", "Changed chip fill"]]],
-  ["Verdicts (always with icon + label)", [["--pass", "Pass"], ["--warn", "Warn"], ["--block", "Block"], ["--focus", "Focus ring"]]],
+  ["Verdicts (always with icon + label)", [["--pass", "Pass (teal, never the brand)"], ["--warn", "Warn"], ["--block", "Block"], ["--focus", "Focus ring"]]],
   ["Series (validated categorical order)", [["--series-1", "Slot 1 · blue"], ["--series-2", "Slot 2 · aqua"], ["--series-3", "Slot 3 · violet"], ["--series-4", "Slot 4 · magenta"]]],
 ];
 
@@ -112,7 +113,7 @@ function Foundations() {
   const [tick, setTick] = useState(0);
   return (
     <>
-      <Section id="color" lede="Warm paper and ink with hairline rules. Amber is reserved for assumptions and changed values, so it always means “you or the agent chose this”. Verdict colors never double as chart series. Dark mode has its own selected steps, contrast-checked against the dark surfaces; it isn't an inversion.">
+      <Section id="color" lede="Near-black surfaces with hairline rules, and one mint brand color for actions and emphasis. Amber is reserved for assumptions and changed values, so it always means “you or the agent chose this”. Pass is teal so it never reads as the brand, and verdict colors never double as chart series. Dark is the default; light has its own selected steps, contrast-checked, and isn't an inversion.">
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {COLOR_GROUPS.map(([group, tokens]) => (
             <div key={group}>
@@ -136,9 +137,10 @@ function Foundations() {
         </p>
       </Section>
 
-      <Section id="type" lede="Three families with three jobs. IBM Plex Sans for the interface and every number on a dashboard (hero figures included), Plex Mono for SQL, parameters and provenance, and Newsreader only for long-form prose on the case study.">
+      <Section id="type" lede="Two families with two jobs. Geist for the interface, display headings (heavy and tightly tracked, uppercase only in the hero) and every number on a dashboard, and Geist Mono for SQL, parameters, labels and provenance.">
         <div className="space-y-3">
           {[
+            ["display text-6xl uppercase", "6xl · 84/80 · hero heading", "Shows its work"],
             ["text-4xl font-semibold tracking-tight", "4xl · 46/50 · hero figure", "8,412"],
             ["text-3xl font-medium tracking-tight", "3xl · 34/40", "Who are our most engaged organizations?"],
             ["text-2xl font-medium", "2xl · 26/34", "Retention this quarter"],
@@ -155,14 +157,14 @@ function Foundations() {
             </div>
           ))}
           <div className="grid gap-4 pt-2 sm:grid-cols-3">
-            <p className="font-sans text-lg text-ink">IBM Plex Sans: interface</p>
-            <p className="font-mono text-base text-ink">IBM Plex Mono: data</p>
-            <p className="font-serif text-xl text-ink italic">Newsreader: prose</p>
+            <p className="font-sans text-lg text-ink">Geist: interface</p>
+            <p className="font-mono text-base text-ink">Geist Mono: data</p>
+            <p className="display text-xl text-ink">Geist display: headings</p>
           </div>
         </div>
       </Section>
 
-      <Section id="space" lede="A 4px grid. Cards breathe at 16px; dense data rows at 4–6px. Radii stay small: this is a tool, not a toy.">
+      <Section id="space" lede="A 4px grid. Cards breathe at 16px; dense data rows at 4–6px. Radii stay small on surfaces (4–10px) and full-round on buttons: this is a tool, not a toy.">
         <div className="flex flex-wrap items-end gap-4">
           {[1, 2, 3, 4, 6, 8, 12, 16].map((n) => (
             <div key={n} className="text-center">
@@ -174,9 +176,9 @@ function Foundations() {
         <div className="mt-6 flex flex-wrap gap-4">
           {[
             ["rounded-xs", "xs · 3px"],
-            ["rounded-sm", "sm · 5px"],
-            ["rounded-md", "md · 8px"],
-            ["rounded-lg", "lg · 12px"],
+            ["rounded-sm", "sm · 4px"],
+            ["rounded-md", "md · 6px"],
+            ["rounded-lg", "lg · 10px"],
             ["rounded-full", "full"],
           ].map(([c, l]) => (
             <div key={l} className="text-center">
@@ -402,7 +404,7 @@ export function SystemShowcase() {
       <div className="min-w-0">
         <header className="mb-10 max-w-3xl">
           <p className="eyebrow">Design system</p>
-          <h1 className="mt-2 font-serif text-4xl tracking-tight text-ink">A lab notebook for an agent that shows its work</h1>
+          <h1 className="mt-2 display text-4xl text-ink">A design system for an agent that shows its work</h1>
           <p className="mt-3 text-lg text-ink-2">
             Glassbox's interface borrows from the audit trail: hairline rules, footnoted numbers, monospace provenance. Every component here exists to make an AI agent's reasoning legible and checkable. Specimens use real output recorded from the agent, not mock data.
           </p>

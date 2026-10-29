@@ -48,7 +48,7 @@ export function DictionaryView() {
       </Link>
       <header className="mt-4 mb-6 max-w-3xl">
         <p className="eyebrow">Data Dictionary · northwind schema</p>
-        <h1 className="mt-2 font-serif text-3xl tracking-tight text-ink">Teach the agent what your data means</h1>
+        <h1 className="mt-2 display text-3xl text-ink">Teach the agent what your data means</h1>
         <p className="mt-2 text-ink-2">
           The agent profiled every column (null rates, common values, ranges) and proposed a plain-English description. Review them: only <strong className="font-medium text-ink">accepted</strong> entries are sent to the agent with your questions. Your decisions stay in this browser.
         </p>

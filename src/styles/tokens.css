@@ -1,157 +1,141 @@
 /*
- * Glassbox design tokens: "lab notebook".
- * Warm paper / ink neutrals, hairline rules, one amber accent reserved for
- * assumptions and "changed" state, a verdict palette (pass / warn / block)
- * that never doubles as a series color, and a validated categorical palette
- * for charts (dataviz validator: all hard gates pass in both modes; light
- * slots 2 and 4 are under 3:1 so charts always ship a table view).
+ * Glassbox design tokens.
+ * Near-black surfaces with hairline rules, one mint brand color for actions
+ * and emphasis, one amber accent reserved for assumptions and "changed"
+ * state, a verdict palette (pass / warn / block) that never doubles as a
+ * series color or as the brand, and a validated categorical palette for
+ * charts (dataviz validator: all hard gates pass in both modes; light slots
+ * 2 and 4 are under 3:1 so charts always ship a table view).
  *
- * Light is the default. Dark is selected, not inverted: its own steps,
- * checked for WCAG contrast against the dark surfaces.
+ * Dark is the default. Light is selected, not inverted: its own steps,
+ * checked for WCAG contrast. Brand mint is a fill (always with --on-brand
+ * text); as text on light surfaces it uses the darker --brand-ink.
  */
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
   /* surfaces */
-  --paper: #f5f3ee;          /* page */
-  --surface: #fbfaf6;        /* cards, chart surface */
-  --surface-sunk: #eeebe4;   /* code, inputs, wells */
-  --surface-raised: #ffffff; /* popovers, side panel */
-  --scrim: rgb(26 25 21 / 0.28);
+  --paper: #0c0c0b;          /* page */
+  --surface: #141413;        /* cards, chart surface */
+  --surface-sunk: #0f0f0e;   /* code, inputs, wells */
+  --surface-raised: #1b1b19; /* popovers, side panel */
+  --scrim: rgb(0 0 0 / 0.6);
 
-  /* ink (contrast on paper: 15.9 / 6.8 / 5.0) */
-  --ink: #1a1915;
-  --ink-2: #57544c;
-  --ink-3: #6a665d;
-  --ink-inverse: #fbfaf6;
+  /* ink (contrast on paper: 17.9 / 9.6 / 5.9) */
+  --ink: #f4f3ef;
+  --ink-2: #b4b2aa;
+  --ink-3: #8f8d85;
+  --ink-inverse: #0c0c0b;
 
   /* rules */
-  --rule: #e2ded5;
-  --rule-strong: #cdc8bc;
+  --rule: #242422;
+  --rule-strong: #363632;
+  --grid: #2b2b28; /* background plus-grid */
+
+  /* brand: actions, links, emphasis. Never a verdict, never a series. */
+  --brand: #25ee86;
+  --brand-hover: #5df3a4;
+  --brand-ink: #25ee86; /* brand as text */
+  --brand-wash: #0d2a1a;
+  --on-brand: #04140a;
 
   /* accent: assumptions + changed state only */
-  --accent: #e9a23b;
-  --accent-ink: #8f5600;
-  --accent-wash: #f8e6c0;
-  --accent-wash-2: #fbf1dc;
-
-  /* focus */
-  --focus: #2457c5;
-
-  /* verdicts (text on paper ≥ 5.4:1; always paired with an icon + label) */
-  --pass: #2e6b30;
-  --pass-wash: #e2eedd;
-  --warn: #a2481a;
-  --warn-wash: #f6e2d3;
-  --block: #b42318;
-  --block-wash: #f8dcd8;
-
-  /* charts */
-  --series-1: #2a78d6;
-  --series-2: #1baf7a;
-  --series-3: #6250d6;
-  --series-4: #e87ba4;
-  --chart-grid: #e6e2d9;
-  --chart-axis: #cdc8bc;
-  --chart-wash: color-mix(in oklab, var(--series-1) 10%, transparent);
-
-  /* SQL syntax */
-  --syn-keyword: #6c3fb4;
-  --syn-function: #1f5fb4;
-  --syn-string: #2e6b30;
-  --syn-number: #a2481a;
-  --syn-param: #8f5600;
-  --syn-comment: #6a665d;
-
-  /* elevation */
-  --shadow-1: 0 1px 0 rgb(26 25 21 / 0.03), 0 1px 2px rgb(26 25 21 / 0.06);
-  --shadow-2: 0 2px 4px rgb(26 25 21 / 0.04), 0 8px 24px -8px rgb(26 25 21 / 0.14);
-  --shadow-panel: -1px 0 0 var(--rule), -24px 0 48px -24px rgb(26 25 21 / 0.22);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --paper: #121210;
-    --surface: #1c1b18;
-    --surface-sunk: #171613;
-    --surface-raised: #23221e;
-    --scrim: rgb(0 0 0 / 0.5);
-    --ink: #eeebe3;
-    --ink-2: #b9b4a8;
-    --ink-3: #9a958a;
-    --ink-inverse: #1a1915;
-    --rule: #2d2b26;
-    --rule-strong: #3d3a33;
-    --accent: #f2b544;
-    --accent-ink: #f2b544;
-    --accent-wash: #3a2d14;
-    --accent-wash-2: #2a2216;
-    --focus: #7aa7ff;
-    --pass: #74c476;
-    --pass-wash: #1d2d1d;
-    --warn: #f29257;
-    --warn-wash: #352215;
-    --block: #f47a72;
-    --block-wash: #3a1a17;
-    --series-1: #3987e5;
-    --series-2: #199e70;
-    --series-3: #9085e9;
-    --series-4: #d55181;
-    --chart-grid: #2a2823;
-    --chart-axis: #3d3a33;
-    --syn-keyword: #c3a6ff;
-    --syn-function: #8cb8ff;
-    --syn-string: #8fd18f;
-    --syn-number: #f29257;
-    --syn-param: #f2b544;
-    --syn-comment: #8e897e;
-    --shadow-1: 0 1px 0 rgb(0 0 0 / 0.3);
-    --shadow-2: 0 8px 24px -8px rgb(0 0 0 / 0.6);
-    --shadow-panel: -1px 0 0 var(--rule), -24px 0 48px -24px rgb(0 0 0 / 0.7);
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --paper: #121210;
-  --surface: #1c1b18;
-  --surface-sunk: #171613;
-  --surface-raised: #23221e;
-  --scrim: rgb(0 0 0 / 0.5);
-  --ink: #eeebe3;
-  --ink-2: #b9b4a8;
-  --ink-3: #9a958a;
-  --ink-inverse: #1a1915;
-  --rule: #2d2b26;
-  --rule-strong: #3d3a33;
   --accent: #f2b544;
   --accent-ink: #f2b544;
   --accent-wash: #3a2d14;
   --accent-wash-2: #2a2216;
+
+  /* focus */
   --focus: #7aa7ff;
-  --pass: #74c476;
-  --pass-wash: #1d2d1d;
+
+  /* verdicts (always paired with an icon + label). Pass is teal, not green, so it never reads as the brand. */
+  --pass: #4fd6cb;
+  --pass-wash: #0f2a28;
   --warn: #f29257;
   --warn-wash: #352215;
   --block: #f47a72;
   --block-wash: #3a1a17;
+
+  /* charts */
   --series-1: #3987e5;
   --series-2: #199e70;
   --series-3: #9085e9;
   --series-4: #d55181;
-  --chart-grid: #2a2823;
-  --chart-axis: #3d3a33;
+  --chart-grid: #242422;
+  --chart-axis: #363632;
+  --chart-wash: color-mix(in oklab, var(--series-1) 14%, transparent);
+
+  /* SQL syntax */
   --syn-keyword: #c3a6ff;
   --syn-function: #8cb8ff;
   --syn-string: #8fd18f;
   --syn-number: #f29257;
   --syn-param: #f2b544;
-  --syn-comment: #8e897e;
+  --syn-comment: #8e8d85;
+
+  /* elevation */
   --shadow-1: 0 1px 0 rgb(0 0 0 / 0.3);
   --shadow-2: 0 8px 24px -8px rgb(0 0 0 / 0.6);
   --shadow-panel: -1px 0 0 var(--rule), -24px 0 48px -24px rgb(0 0 0 / 0.7);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #f6f6f3;
+  --surface: #ffffff;
+  --surface-sunk: #eeeeea;
+  --surface-raised: #ffffff;
+  --scrim: rgb(12 12 11 / 0.28);
+
+  /* contrast on paper: 18.5 / 7.6 / 5.6 */
+  --ink: #0c0c0b;
+  --ink-2: #4d4c47;
+  --ink-3: #63625c;
+  --ink-inverse: #f6f6f3;
+
+  --rule: #e3e2dd;
+  --rule-strong: #c9c8c1;
+  --grid: #dcdbd5;
+
+  --brand: #1fe57f;
+  --brand-hover: #12cf6d;
+  --brand-ink: #006b35;
+  --brand-wash: #dcf8e8;
+  --on-brand: #04140a;
+
+  --accent: #e9a23b;
+  --accent-ink: #8f5600;
+  --accent-wash: #f8e6c0;
+  --accent-wash-2: #fbf1dc;
+
+  --focus: #2457c5;
+
+  --pass: #0b6b64;
+  --pass-wash: #d6f0ed;
+  --warn: #a2481a;
+  --warn-wash: #f6e2d3;
+  --block: #b42318;
+  --block-wash: #f8dcd8;
+
+  --series-1: #2a78d6;
+  --series-2: #1baf7a;
+  --series-3: #6250d6;
+  --series-4: #e87ba4;
+  --chart-grid: #e8e7e2;
+  --chart-axis: #c9c8c1;
+  --chart-wash: color-mix(in oklab, var(--series-1) 10%, transparent);
+
+  --syn-keyword: #6c3fb4;
+  --syn-function: #1f5fb4;
+  --syn-string: #2e6b30;
+  --syn-number: #a2481a;
+  --syn-param: #8f5600;
+  --syn-comment: #63625c;
+
+  --shadow-1: 0 1px 0 rgb(12 12 11 / 0.03), 0 1px 2px rgb(12 12 11 / 0.06);
+  --shadow-2: 0 2px 4px rgb(12 12 11 / 0.04), 0 8px 24px -8px rgb(12 12 11 / 0.14);
+  --shadow-panel: -1px 0 0 var(--rule), -24px 0 48px -24px rgb(12 12 11 / 0.22);
 }
 
 :root {

@@ -13,10 +13,10 @@ export default function ResumePage() {
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="eyebrow">Resume</p>
-          <h1 className="mt-1 font-serif text-3xl tracking-tight text-ink">{SITE.authorName}</h1>
+          <h1 className="mt-1 display text-3xl text-ink">{SITE.authorName}</h1>
         </div>
         {has && (
-          <a href={SITE.resumeSrc} download className="inline-flex h-9 items-center gap-2 rounded-md bg-ink px-3.5 text-sm font-medium text-ink-inverse hover:bg-ink/85">
+          <a href={SITE.resumeSrc} download className="inline-flex h-9 items-center gap-2 rounded-full bg-brand px-4 text-sm font-medium text-on-brand hover:bg-brand-hover">
             Download PDF
           </a>
         )}

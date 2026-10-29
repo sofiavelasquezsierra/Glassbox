@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { themeScript } from "@/components/site/ThemeToggle";
+import { PlusGrid } from "@/components/site/PlusGrid";
 import { TopNav } from "@/components/site/TopNav";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-plex-sans", display: "swap" });
-const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
-const serif = Newsreader({ subsets: ["latin"], variable: "--font-newsreader", display: "swap", style: ["normal", "italic"] });
+const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans", display: "swap" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -23,18 +23,19 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f3ee" },
-    { media: "(prefers-color-scheme: dark)", color: "#121210" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f6f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c0c0b" },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable} ${serif.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>
+      <body className="relative isolate">
+        <PlusGrid />
         <TopNav />
         <div id="main">{children}</div>
       </body>
