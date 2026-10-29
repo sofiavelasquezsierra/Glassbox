@@ -9,7 +9,7 @@ export const SITE = {
   /** Poster frame for the video, e.g. "/walkthrough-poster.jpg". */
   walkthroughPoster: null as string | null,
   /** Your name as it should appear on the case study and resume pages. */
-  authorName: "TODO(you): your name",
+  authorName: "Sofia Velasquez Sierra",
   /** Resume PDF in /public. */
   resumeSrc: "/resume.pdf",
 };

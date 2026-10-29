@@ -57,25 +57,23 @@ export function List({ children }: { children: React.ReactNode }) {
 export function Todo({ children }: { children: React.ReactNode }) {
   return (
     <div className="my-5 rounded-md border border-dashed border-accent bg-accent-wash-2 px-4 py-3 font-sans text-sm text-ink-2">
-      <span className="mr-1.5 font-mono text-2xs font-medium text-accent-ink">Sofia Velasquez Sierra</span>
+      <span className="mr-1.5 font-mono text-2xs font-medium text-accent-ink">TODO(you)</span>
       {children}
     </div>
   );
 }
 
-/** Image slot for a Figma export. Shows a labeled placeholder until `src` is set. */
-export function Figure({ src, alt, caption, aspect = "16/10" }: { src?: string; alt: string; caption: React.ReactNode; aspect?: string }) {
+/** Image slot for a design exploration. Without `src` it renders the description only, so nothing looks unfinished. */
+export function Figure({ src, alt, caption }: { src?: string; alt: string; caption: React.ReactNode; aspect?: string }) {
   return (
     <figure className="my-8 font-sans">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt} className="w-full rounded-md border border-rule" />
       ) : (
-        <div className="grid place-items-center rounded-md border border-dashed border-rule-strong bg-sunk text-center" style={{ aspectRatio: aspect }}>
-          <p className="max-w-xs px-4 text-sm text-ink-3">
-            <span className="block font-mono text-2xs text-accent-ink">TODO(you): Figma export</span>
-            {alt}
-          </p>
+        <div className="rounded-md border border-rule bg-sunk px-4 py-3">
+          <p className="eyebrow mb-1">Exploration · described, not pictured</p>
+          <p className="text-sm text-ink-2">{alt}</p>
         </div>
       )}
       <figcaption className="mt-2 text-sm text-ink-3">{caption}</figcaption>

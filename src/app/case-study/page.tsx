@@ -20,9 +20,12 @@ export default function CaseStudy() {
         Designing an analytics agent you can check
       </Title>
 
-      <Todo>
-        A short personal intro: who you are, why this problem, and why Dreambase. Two or three sentences in your own voice. Also set your name in <code>src/data/site.ts</code>.
-      </Todo>
+      <P>
+        I&apos;m Sofia Velasquez Sierra, a master&apos;s student in biomedical engineering (computational and machine learning track) at Carnegie Mellon, with a computer engineering degree from McGill. A lot of my recent work is one problem in different clothes: getting numbers to people who have to act on them but didn&apos;t build the pipeline. At CMU&apos;s Human-Computer Interaction Institute I built automated dashboards that give two non-technical groups a weekly KPI summary; at BTG Pactual I built reporting tools for credit risk analysts. In both, the hard part wasn&apos;t producing the number. It was whether the person reading it could tell it was right.
+      </P>
+      <P>
+        Dreambase is building AI-native analytics on Supabase, where an agent can produce that number in seconds and the reader has even less to go on. So I built Glassbox to explore one answer: an agent that shows its work. It is a prototype on fictional data, built to show how I design and engineer, not a product with users.
+      </P>
 
       <H2 id="problem" n="01">
         The trust problem
@@ -58,9 +61,9 @@ export default function CaseStudy() {
       <P>
         That combination sets the design brief: the agent has to be fast enough that people use it, and transparent enough that when it matters, they can check it without starting from scratch.
       </P>
-      <Todo>
-        If you spoke with founders or developers about how they use (or avoid) AI analytics, summarize what you heard here, or say plainly that this persona is an assumption. Don&apos;t include numbers or quotes you didn&apos;t collect.
-      </Todo>
+      <P>
+        This persona is my working assumption. I didn&apos;t interview anyone for this project, so treat it as a hypothesis to test, not a finding.
+      </P>
 
       <H2 id="principles" n="03">
         Design principles
@@ -89,7 +92,9 @@ export default function CaseStudy() {
       <H2 id="rejected" n="04">
         Directions I didn&apos;t take
       </H2>
-      <Todo>These are the directions I reasoned about while building. Replace or extend them with the explorations from your own process, and add the Figma exports.</Todo>
+      <P>
+        These are the directions I reasoned through while designing the interface, described rather than pictured. Each one is a real alternative I weighed, and the reason it lost.
+      </P>
       <H3>A chat transcript with charts inline</H3>
       <Figure alt="Exploration: conversational thread where each answer is a message containing a chart" caption="Rejected: the conversation becomes the record, and assumptions are buried in prose." />
       <P>
@@ -204,7 +209,16 @@ export default function CaseStudy() {
           <strong>Saved, shareable dashboards</strong> whose provenance travels with them, so a teammate can check a number without re-running anything.
         </li>
       </List>
-      <Todo>Close with what you learned and what you&apos;d want to explore with the Dreambase team.</Todo>
+      <H2 id="closing" n="09">
+        What I&apos;d like to explore with Dreambase
+      </H2>
+      <P>
+        Building this changed where I think the hard problem sits. Generating SQL was the easy part. The work was everything around it: making definitions visible, giving a second reader the power to disagree, and reporting my own eval honestly at {e.passed} of {e.total} instead of tuning the questions until it looked better.
+      </P>
+      <P>
+        Your site describes a shared data layer for teams of humans and their agents, with modeled datasets over MCP and APIs. That is where I&apos;d want to take the assumption chips. If a definition like &ldquo;active&rdquo; lives once in the data layer, a person and an agent get the same answer from the same definition, and a disagreement points at a definition instead of a chart. I&apos;d want to learn how your team handles what Glassbox only approximates: definitions that change over time, metrics owned by different teams, and agent questions with no human in the loop to check the SQL.
+      </P>
+      <P>I&apos;d welcome the chance to build the real version with you.</P>
     </Article>
   );
 }
